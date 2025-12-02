@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+ENV/
+env/
+
+# Perl
+*.pm.bak
+*.pl.bak
+blib/
+pm_to_blib
+MYMETA.*
+
+# Databases (optional - uncomment if you don't want to commit databases)
+# *.db
+# *.sqlite
+# *.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
