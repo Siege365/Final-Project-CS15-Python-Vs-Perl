@@ -1,0 +1,49 @@
+% layout 'default';
+% title 'Products';
+
+<h1>Products</h1>
+
+<div class="search-box">
+    <form method="GET" action="/products" style="display: flex; gap: 10px; width: 100%;">
+        <input type="text" name="search" placeholder="Search products..." value="<%= param('search') // '' %>">
+        <select name="category">
+            <option value="">All Categories</option>
+            % for my $cat (@$categories) {
+            <option value="<%= $cat %>" <%= param('category') eq $cat ? 'selected' : '' %>><%= $cat %></option>
+            % }
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+<div class="product-grid">
+    % for my $product (@$products) {
+    <div class="product-card">
+        <div class="content">
+            <h3><%= $product->{name} %></h3>
+            <div class="category"><%= $product->{category} %></div>
+            <div class="price">$<%= sprintf("%.2f", $product->{price}) %></div>
+            <div class="stock <%= $product->{stock_quantity} <= 0 ? 'out' : $product->{stock_quantity} <= $product->{reorder_level} ? 'low' : '' %>">
+                Stock: <%= $product->{stock_quantity} %>
+            </div>
+            <p><%= substr($product->{description} // '', 0, 100) %>...</p>
+            
+            % if ($product->{stock_quantity} > 0) {
+            <form method="POST" action="/cart/add">
+                <input type="hidden" name="product_id" value="<%= $product->{id} %>">
+                <input type="number" name="quantity" value="1" min="1" max="<%= $product->{stock_quantity} %>" style="width: 60px;">
+                <button type="submit" class="btn btn-success">Add to Cart</button>
+            </form>
+            % } else {
+            <button class="btn btn-secondary" disabled>Out of Stock</button>
+            % }
+        </div>
+    </div>
+    % }
+</div>
+
+% unless (@$products) {
+<div class="card">
+    <p>No products found.</p>
+</div>
+% }

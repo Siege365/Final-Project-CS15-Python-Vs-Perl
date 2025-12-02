@@ -1,0 +1,46 @@
+% layout 'default';
+% title 'Orders';
+
+<h1>Orders</h1>
+
+% if (@$orders) {
+<table>
+    <thead>
+        <tr>
+            <th>Order #</th>
+            % unless (has_role('customer')) {
+            <th>Customer</th>
+            % }
+            <th>Total</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        % for my $order (@$orders) {
+        <tr>
+            <td><%= $order->{order_number} %></td>
+            % unless (has_role('customer')) {
+            <td><%= $order->{first_name} %> <%= $order->{last_name} %></td>
+            % }
+            <td>$<%= sprintf("%.2f", $order->{total}) %></td>
+            <td><span class="status <%= $order->{status} %>"><%= $order->{status} %></span></td>
+            <td><%= $order->{payment_method} %></td>
+            <td><%= $order->{created_at} %></td>
+            <td>
+                <a href="/orders/<%= $order->{id} %>" class="btn btn-primary">View</a>
+            </td>
+        </tr>
+        % }
+    </tbody>
+</table>
+% } else {
+<div class="card">
+    <p>No orders found.</p>
+    % if (has_role('customer')) {
+    <a href="/products" class="btn btn-primary">Start Shopping</a>
+    % }
+</div>
+% }

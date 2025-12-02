@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'E-Commerce Order Processing System' %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>E-Commerce Order Processing System</h1>
+        </div>
+    </header>
+    
+    % if (is_logged_in()) {
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/products">Products</a></li>
+                <li><a href="/orders">Orders</a></li>
+                <li><a href="/cart">Cart (<%= scalar @{get_cart()} %>)</a></li>
+                % if (!has_role('customer')) {
+                <li><a href="/customers">Customers</a></li>
+                <li><a href="/reports">Reports</a></li>
+                % }
+                <li><a href="/logout">Logout (<%= current_user()->{username} %>)</a></li>
+            </ul>
+        </div>
+    </nav>
+    % }
+    
+    <div class="container">
+        % if (my $success = flash 'success') {
+        <div class="alert alert-success"><%= $success %></div>
+        % }
+        % if (my $error = flash 'error') {
+        <div class="alert alert-error"><%= $error %></div>
+        % }
+        
+        <%= content %>
+    </div>
+</body>
+</html>

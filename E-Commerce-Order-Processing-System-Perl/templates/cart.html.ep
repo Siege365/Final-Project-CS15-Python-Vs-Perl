@@ -1,0 +1,83 @@
+% layout 'default';
+% title 'Shopping Cart';
+
+<h1>Shopping Cart</h1>
+
+% if (@$cart) {
+    % my $subtotal = 0;
+    % for my $item (@$cart) {
+        % my $item_total = $item->{price} * $item->{quantity};
+        % $subtotal += $item_total;
+    <div class="cart-item">
+        <div class="cart-item-info">
+            <div class="cart-item-name"><%= $item->{name} %></div>
+            <div class="cart-item-price">$<%= sprintf("%.2f", $item->{price}) %> each</div>
+        </div>
+        <div class="cart-item-quantity">
+            Qty: <%= $item->{quantity} %>
+        </div>
+        <div class="cart-item-total">
+            $<%= sprintf("%.2f", $item_total) %>
+        </div>
+    </div>
+    % }
+    
+    % use ECommerce::Config;
+    % my $tax = $subtotal * $ECommerce::Config::APP_CONFIG{tax_rate};
+    % my $shipping = $subtotal >= $ECommerce::Config::APP_CONFIG{free_shipping_threshold} ? 0 : $ECommerce::Config::APP_CONFIG{shipping_rate};
+    % my $total = $subtotal + $tax + $shipping;
+    
+    <div class="cart-summary">
+        <div class="line">
+            <span>Subtotal:</span>
+            <span>$<%= sprintf("%.2f", $subtotal) %></span>
+        </div>
+        <div class="line">
+            <span>Tax (<%= $ECommerce::Config::APP_CONFIG{tax_rate} * 100 %>%):</span>
+            <span>$<%= sprintf("%.2f", $tax) %></span>
+        </div>
+        <div class="line">
+            <span>Shipping:</span>
+            <span>
+                % if ($shipping == 0) {
+                FREE
+                % } else {
+                $<%= sprintf("%.2f", $shipping) %>
+                % }
+            </span>
+        </div>
+        <div class="line total">
+            <span>Total:</span>
+            <span>$<%= sprintf("%.2f", $total) %></span>
+        </div>
+    </div>
+    
+    <div class="card mt-2">
+        <h2>Checkout</h2>
+        <form method="POST" action="/checkout">
+            <div class="form-group">
+                <label for="payment_method">Payment Method</label>
+                <select name="payment_method" id="payment_method" required>
+                    <option value="">Select payment method</option>
+                    <option value="credit_card">Credit Card</option>
+                    <option value="debit_card">Debit Card</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="cash_on_delivery">Cash on Delivery</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="shipping_address">Shipping Address</label>
+                <textarea name="shipping_address" id="shipping_address" required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-success">Place Order</button>
+        </form>
+    </div>
+% } else {
+<div class="card">
+    <p>Your cart is empty.</p>
+    <a href="/products" class="btn btn-primary">Continue Shopping</a>
+</div>
+% }

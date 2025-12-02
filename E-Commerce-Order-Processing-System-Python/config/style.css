@@ -1,0 +1,280 @@
+/* E-Commerce Order Processing System - Custom Styles */
+
+/* Global Styles */
+.main {
+    padding: 1rem 2rem;
+}
+
+/* Header Styles */
+h1, h2, h3 {
+    color: #2E86AB;
+    font-weight: 600;
+}
+
+/* Card Styles */
+.metric-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2E86AB;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: #6C757D;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Button Styles */
+.stButton > button {
+    border-radius: 6px;
+    font-weight: 500;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Primary Button */
+.primary-btn {
+    background-color: #2E86AB !important;
+    color: white !important;
+}
+
+/* Success Button */
+.success-btn {
+    background-color: #06A77D !important;
+    color: white !important;
+}
+
+/* Danger Button */
+.danger-btn {
+    background-color: #C73E1D !important;
+    color: white !important;
+}
+
+/* Warning Button */
+.warning-btn {
+    background-color: #F18F01 !important;
+    color: white !important;
+}
+
+/* Table Styles */
+.dataframe {
+    border: 1px solid #E0E0E0 !important;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.dataframe thead tr th {
+    background-color: #2E86AB !important;
+    color: white !important;
+    font-weight: 600;
+    text-align: left;
+    padding: 12px;
+    border: none !important;
+}
+
+.dataframe tbody tr {
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.dataframe tbody tr:hover {
+    background-color: #F8F9FA;
+}
+
+.dataframe tbody tr td {
+    padding: 12px;
+    border: none !important;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-pending {
+    background-color: #FFF3CD;
+    color: #856404;
+}
+
+.status-processing {
+    background-color: #CCE5FF;
+    color: #004085;
+}
+
+.status-shipped {
+    background-color: #D1ECF1;
+    color: #0C5460;
+}
+
+.status-delivered {
+    background-color: #D4EDDA;
+    color: #155724;
+}
+
+.status-cancelled {
+    background-color: #F8D7DA;
+    color: #721C24;
+}
+
+.status-refunded {
+    background-color: #E2E3E5;
+    color: #383D41;
+}
+
+/* Sidebar Styles */
+.css-1d391kg {
+    background-color: #F0F2F6;
+}
+
+section[data-testid="stSidebar"] {
+    background-color: #F0F2F6;
+}
+
+/* Input Styles */
+.stTextInput > div > div > input,
+.stSelectbox > div > div > select,
+.stNumberInput > div > div > input,
+.stTextArea > div > div > textarea {
+    border-radius: 6px;
+    border: 1px solid #CED4DA;
+}
+
+.stTextInput > div > div > input:focus,
+.stSelectbox > div > div > select:focus,
+.stNumberInput > div > div > input:focus,
+.stTextArea > div > div > textarea:focus {
+    border-color: #2E86AB;
+    box-shadow: 0 0 0 0.2rem rgba(46, 134, 171, 0.25);
+}
+
+/* Alert Styles */
+.stAlert {
+    border-radius: 6px;
+    border-left: 4px solid;
+}
+
+/* Info Alert */
+div[data-baseweb="notification"][kind="info"] {
+    border-left-color: #2E86AB;
+    background-color: #D1ECF1;
+}
+
+/* Success Alert */
+div[data-baseweb="notification"][kind="success"] {
+    border-left-color: #06A77D;
+    background-color: #D4EDDA;
+}
+
+/* Warning Alert */
+div[data-baseweb="notification"][kind="warning"] {
+    border-left-color: #F18F01;
+    background-color: #FFF3CD;
+}
+
+/* Error Alert */
+div[data-baseweb="notification"][kind="error"] {
+    border-left-color: #C73E1D;
+    background-color: #F8D7DA;
+}
+
+/* Chart Styles */
+.js-plotly-plot {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Divider */
+hr {
+    border: none;
+    border-top: 2px solid #E0E0E0;
+    margin: 2rem 0;
+}
+
+/* Tab Styles */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    border-radius: 6px 6px 0 0;
+    padding: 10px 20px;
+    background-color: #F8F9FA;
+    border: 1px solid #E0E0E0;
+    border-bottom: none;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: #FFFFFF;
+    border-bottom: 2px solid #2E86AB;
+}
+
+/* Expander Styles */
+.streamlit-expanderHeader {
+    background-color: #F8F9FA;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* Column Gap */
+[data-testid="column"] {
+    padding: 0 0.5rem;
+}
+
+/* Custom Classes */
+.order-summary {
+    background-color: #F8F9FA;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.product-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.cart-item {
+    background-color: #F8F9FA;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Stats Card */
+.stats-card {
+    background-color: #FFFFFF;
+    border-left: 4px solid #2E86AB;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Hide Streamlit Branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}

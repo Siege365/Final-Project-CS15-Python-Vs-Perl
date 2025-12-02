@@ -1,0 +1,51 @@
+% layout 'default';
+% title 'Dashboard';
+
+<h1>Dashboard</h1>
+
+<div class="metrics">
+    <div class="metric-card">
+        <h3>Total Products</h3>
+        <div class="value"><%= $stats->{total_products} %></div>
+    </div>
+    
+    <div class="metric-card warning">
+        <h3>Low Stock Items</h3>
+        <div class="value"><%= $stats->{low_stock} %></div>
+    </div>
+    
+    <div class="metric-card success">
+        <h3>Total Orders</h3>
+        <div class="value"><%= $stats->{total_orders} %></div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Recent Orders</h2>
+    % if (@{$stats->{recent_orders}}) {
+    <table>
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            % for my $order (@{$stats->{recent_orders}}) {
+            <tr>
+                <td><a href="/orders/<%= $order->{id} %>"><%= $order->{order_number} %></a></td>
+                <td><%= $order->{first_name} %> <%= $order->{last_name} %></td>
+                <td>$<%= sprintf("%.2f", $order->{total}) %></td>
+                <td><span class="status <%= $order->{status} %>"><%= $order->{status} %></span></td>
+                <td><%= $order->{created_at} %></td>
+            </tr>
+            % }
+        </tbody>
+    </table>
+    % } else {
+    <p>No recent orders.</p>
+    % }
+</div>
