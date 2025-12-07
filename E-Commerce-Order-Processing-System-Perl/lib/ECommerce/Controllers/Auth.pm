@@ -50,7 +50,7 @@ sub login {
 }
 
 sub register {
-    my ($self, $username, $email, $password, $role) = @_;
+    my ($self, $username, $email, $password, $role, $phone, $address, $first_name, $last_name) = @_;
     
     # Validate input
     return {success => 0, message => 'Username is required'} unless $username;
@@ -64,6 +64,21 @@ sub register {
     
     # Create user
     my $result = $self->{user_model}->create_user($username, $email, $password, $role // 'customer');
+    
+    # If user creation successful and role is customer, create customer record
+    if ($result->{success} && ($role // 'customer') eq 'customer') {
+        my $customer_result = $self->{customer_model}->create_customer(
+            user_id => $result->{user_id},
+            first_name => $first_name || $username,
+            last_name => $last_name || '',
+            phone => $phone // '',
+            address => $address // ''
+        );
+        
+        unless ($customer_result->{success}) {
+            return {success => 0, message => 'User created but failed to create customer profile'};
+        }
+    }
     
     return $result;
 }

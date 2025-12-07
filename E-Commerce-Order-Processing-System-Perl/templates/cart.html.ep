@@ -19,6 +19,10 @@
         <div class="cart-item-total">
             $<%= sprintf("%.2f", $item_total) %>
         </div>
+        <form method="POST" action="/cart/remove" class="cart-item-remove">
+            <input type="hidden" name="product_id" value="<%= $item->{product_id} %>">
+            <button type="submit" class="btn-remove-cart" title="Remove item">×</button>
+        </form>
     </div>
     % }
     

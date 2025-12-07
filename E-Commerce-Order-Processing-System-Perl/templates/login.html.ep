@@ -22,12 +22,5 @@
         <div class="link">
             Don't have an account? <a href="/register">Register here</a>
         </div>
-        
-        <div class="card mt-3">
-            <h3>Default Accounts</h3>
-            <p><strong>Admin:</strong> admin / admin123</p>
-            <p><strong>Staff:</strong> staff / staff123</p>
-            <p><strong>Customer:</strong> customer / customer123</p>
-        </div>
     </div>
 </div>

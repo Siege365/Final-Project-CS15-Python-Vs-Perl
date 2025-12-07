@@ -61,7 +61,7 @@ def explore_db(db_path):
                         print("(No results)\n")
                 else:
                     conn.commit()
-                    print(f"✓ Query executed successfully\n")
+                    print("✓ Query executed successfully\n")
                     
             except sqlite3.Error as e:
                 print(f"❌ Error: {e}\n")

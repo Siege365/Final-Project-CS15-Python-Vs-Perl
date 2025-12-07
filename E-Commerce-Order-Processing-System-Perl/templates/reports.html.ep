@@ -6,17 +6,17 @@
 <div class="metrics">
     <div class="metric-card success">
         <h3>Total Revenue</h3>
-        <div class="value">$<%= sprintf("%.2f", $stats->{total_revenue}) %></div>
+        <div class="value">$<%= format_number(int($stats->{total_revenue})) %></div>
     </div>
     
     <div class="metric-card">
         <h3>Total Orders</h3>
-        <div class="value"><%= $stats->{total_orders} %></div>
+        <div class="value"><%= format_number($stats->{total_orders}) %></div>
     </div>
     
     <div class="metric-card">
         <h3>Average Order Value</h3>
-        <div class="value">$<%= sprintf("%.2f", $stats->{average_order_value}) %></div>
+        <div class="value">$<%= format_number(int($stats->{average_order_value})) %></div>
     </div>
 </div>
 
@@ -30,11 +30,13 @@
             </tr>
         </thead>
         <tbody>
-            % for my $status (keys %{$stats->{by_status}}) {
+            % for my $status (qw(pending processing shipped delivered cancelled refunded)) {
+            % if ($stats->{by_status}{$status}) {
             <tr>
-                <td><span class="status <%= $status %>"><%= $status %></span></td>
-                <td><%= $stats->{by_status}{$status}{count} %></td>
+                <td><span class="status <%= $status %>"><%= ucfirst($status) %></span></td>
+                <td><%= format_number($stats->{by_status}{$status}{count}) %></td>
             </tr>
+            % }
             % }
         </tbody>
     </table>
@@ -56,10 +58,34 @@
             <tr>
                 <td><%= $customer->{first_name} %> <%= $customer->{last_name} %></td>
                 <td><%= $customer->{email} %></td>
-                <td><%= $customer->{order_count} %></td>
-                <td>$<%= sprintf("%.2f", $customer->{total_spent}) %></td>
+                <td><%= format_number($customer->{order_count}) %></td>
+                <td>$<%= format_number(int($customer->{total_spent})) %></td>
             </tr>
             % }
         </tbody>
     </table>
+    
+    % if (defined $total_pages && $total_pages > 1) {
+    <div style="text-align: center; margin-top: 30px;">
+        <div class="pagination" style="display: inline-flex;">
+        % if ($page > 1) {
+        <a href="?page=<%= $page - 1 %>" class="btn btn-sm">&laquo; Prev</a>
+        % }
+        
+        % for my $p (1..$total_pages) {
+            % if ($p == $page) {
+            <span class="btn btn-sm btn-primary"><%= $p %></span>
+            % } elsif ($p == 1 || $p == $total_pages || abs($p - $page) <= 2) {
+            <a href="?page=<%= $p %>" class="btn btn-sm"><%= $p %></a>
+            % } elsif (abs($p - $page) == 3) {
+            <span>...</span>
+            % }
+        % }
+        
+        % if ($page < $total_pages) {
+        <a href="?page=<%= $page + 1 %>" class="btn btn-sm">Next &raquo;</a>
+        % }
+        </div>
+    </div>
+    % }
 </div>

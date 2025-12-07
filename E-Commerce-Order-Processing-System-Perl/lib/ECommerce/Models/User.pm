@@ -53,6 +53,7 @@ sub get_user_by_username {
     my $sth = $dbh->prepare("SELECT * FROM users WHERE username = ?");
     $sth->execute($username);
     my $user = $sth->fetchrow_hashref();
+    $sth->finish();
     $dbh->disconnect();
     
     return $user;
@@ -65,6 +66,7 @@ sub get_user_by_id {
     my $sth = $dbh->prepare("SELECT * FROM users WHERE id = ?");
     $sth->execute($user_id);
     my $user = $sth->fetchrow_hashref();
+    $sth->finish();
     $dbh->disconnect();
     
     return $user;

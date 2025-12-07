@@ -47,13 +47,14 @@ sub get_all_customers {
     
     my $dbh = $self->{db}->connect();
     my $sth = $dbh->prepare(
-        "SELECT c.*, u.username, u.email 
+        "SELECT c.*, u.username, u.email, u.is_active, u.created_at 
          FROM customers c 
          LEFT JOIN users u ON c.user_id = u.id 
          ORDER BY c.created_at DESC"
     );
     $sth->execute();
     my $customers = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $customers;
@@ -71,6 +72,7 @@ sub get_customer_by_id {
     );
     $sth->execute($customer_id);
     my $customer = $sth->fetchrow_hashref();
+    $sth->finish();
     $dbh->disconnect();
     
     return $customer;
@@ -83,6 +85,7 @@ sub get_customer_by_user_id {
     my $sth = $dbh->prepare("SELECT * FROM customers WHERE user_id = ?");
     $sth->execute($user_id);
     my $customer = $sth->fetchrow_hashref();
+    $sth->finish();
     $dbh->disconnect();
     
     return $customer;
@@ -137,6 +140,7 @@ sub search_customers {
     my $pattern = "%$search_term%";
     $sth->execute($pattern, $pattern, $pattern, $pattern);
     my $customers = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $customers;
@@ -201,6 +205,7 @@ sub get_top_customers {
     );
     $sth->execute($limit);
     my $customers = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $customers;

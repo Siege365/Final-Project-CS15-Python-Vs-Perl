@@ -4,21 +4,40 @@
 <div class="order-detail">
     <div class="order-header">
         <h2>Order <%= $order->{order_number} %></h2>
-        <span class="status <%= $order->{status} %>"><%= $order->{status} %></span>
+        <span class="status <%= $order->{status} %>"><%= ucfirst($order->{status}) %></span>
     </div>
     
+    % if (session('role') eq 'admin' || session('role') eq 'staff') {
+    <div class="order-actions" style="margin: 20px 0;">
+        <h3>Update Status</h3>
+        <form method="POST" action="/orders/<%= $order->{id} %>/update-status" style="display: flex; gap: 10px;">
+            <select name="status" required>
+                <option value="">-- Select Status --</option>
+                <option value="pending" <%= $order->{status} eq 'pending' ? 'selected' : '' %>>Pending</option>
+                <option value="processing" <%= $order->{status} eq 'processing' ? 'selected' : '' %>>Processing</option>
+                <option value="shipped" <%= $order->{status} eq 'shipped' ? 'selected' : '' %>>Shipped</option>
+                <option value="delivered" <%= $order->{status} eq 'delivered' ? 'selected' : '' %>>Delivered</option>
+                <option value="cancelled" <%= $order->{status} eq 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Update Status</button>
+        </form>
+    </div>
+    % }
+    
     <div class="order-info">
+        % if (session('role') eq 'admin' || session('role') eq 'staff') {
         <div class="order-info-item">
             <label>Customer</label>
-            <div class="value"><%= $order->{first_name} %> <%= $order->{last_name} %></div>
+            <div class="value"><%= $order->{first_name} || 'N/A' %> <%= $order->{last_name} || '' %></div>
         </div>
         <div class="order-info-item">
             <label>Email</label>
-            <div class="value"><%= $order->{email} %></div>
+            <div class="value"><%= $order->{email} || 'N/A' %></div>
         </div>
+        % }
         <div class="order-info-item">
             <label>Payment Method</label>
-            <div class="value"><%= $order->{payment_method} %></div>
+            <div class="value"><%= ucfirst($order->{payment_method} =~ s/_/ /gr) %></div>
         </div>
         <div class="order-info-item">
             <label>Order Date</label>

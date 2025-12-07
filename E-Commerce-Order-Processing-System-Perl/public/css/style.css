@@ -65,6 +65,7 @@ nav a:hover {
     padding: 20px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: visible;
 }
 
 .card h2 {
@@ -143,9 +144,14 @@ nav a:hover {
 .product-card {
     background: white;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.product-card > img {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 }
 
 .product-card:hover {
@@ -214,6 +220,9 @@ button, .btn {
     text-decoration: none;
     display: inline-block;
     transition: background-color 0.3s, transform 0.1s;
+    box-sizing: border-box;
+    line-height: normal;
+    vertical-align: middle;
 }
 
 button:hover, .btn:hover {
@@ -317,14 +326,33 @@ textarea {
     min-height: 100px;
 }
 
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.form-actions > * {
+    text-align: center;
+}
+
 /* Table Styles */
 table {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
     background: white;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+table thead th:first-child {
+    border-top-left-radius: 8px;
+}
+
+table thead th:last-child {
+    border-top-right-radius: 8px;
 }
 
 thead {
@@ -341,6 +369,7 @@ th {
 td {
     padding: 12px 15px;
     border-bottom: 1px solid #f0f0f0;
+    background-color: white;
 }
 
 tbody tr:hover {
@@ -429,6 +458,37 @@ tbody tr:last-child td {
     color: #2E86AB;
     min-width: 100px;
     text-align: right;
+}
+
+.cart-item-remove {
+    background: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    margin-left: 15px !important;
+    border: none;
+    display: flex;
+    align-items: center;
+}
+
+.btn-remove-cart {
+    background: none !important;
+    color: #dc3545 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 1.5em;
+    line-height: 1;
+    border-radius: 0 !important;
+    border: none !important;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.btn-remove-cart:hover {
+    background: transparent !important;
+    color: #a71d2a !important;
+    transform: scale(1.3) !important;
 }
 
 .cart-summary {
@@ -661,6 +721,121 @@ tbody tr:last-child td {
     align-items: center;
 }
 
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 20px 0;
+    padding: 15px;
+}
+
+.pagination .btn-sm {
+    min-width: 35px;
+    text-align: center;
+}
+
+.pagination span:not(.btn) {
+    padding: 0 5px;
+    color: #666;
+}
+
 .gap-1 { gap: 10px; }
 .gap-2 { gap: 20px; }
 .gap-3 { gap: 30px; }
+
+/* Dropdown Menu Styles */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown > button {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    padding: 5px 8px;
+    cursor: pointer;
+    color: #333;
+}
+
+.dropdown > button:hover {
+    background-color: #f0f0f0;
+    transform: none;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    min-width: 140px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    z-index: 1000;
+    margin-top: 2px;
+    padding: 0;
+}
+
+.dropdown-menu.show-upward {
+    top: auto;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: 2px;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+    display: block;
+    padding: 10px 12px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s;
+    border: none;
+    width: 100%;
+    text-align: left;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    margin: 0;
+    font-weight: normal;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background-color: #e9ecef;
+    transform: none;
+}
+
+.dropdown-menu button[type="submit"] {
+    color: #dc3545;
+}
+
+.dropdown-menu button[type="submit"]:hover {
+    background-color: #ffe5e5;
+}
+
+.dropdown-menu form {
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown-menu a:first-child,
+.dropdown-menu form:first-child button {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.dropdown-menu a:last-child,
+.dropdown-menu form:last-child button {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}

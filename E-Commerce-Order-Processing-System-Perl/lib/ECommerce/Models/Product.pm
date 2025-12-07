@@ -21,6 +21,16 @@ sub create_product {
     
     my $dbh = $self->{db}->connect();
     
+    # Check for duplicate SKU
+    my $sth = $dbh->prepare("SELECT id FROM products WHERE sku = ?");
+    $sth->execute($params{sku});
+    if ($sth->fetchrow_array()) {
+        $sth->finish();
+        $dbh->disconnect();
+        return {success => 0, message => "Product with SKU '$params{sku}' already exists"};
+    }
+    $sth->finish();
+    
     eval {
         $dbh->do(
             "INSERT INTO products (name, description, sku, category, price, cost, stock_quantity, reorder_level, image_url) 
@@ -56,6 +66,7 @@ sub get_all_products {
     my $sth = $dbh->prepare($sql);
     $sth->execute();
     my $products = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $products;
@@ -68,6 +79,7 @@ sub get_product_by_id {
     my $sth = $dbh->prepare("SELECT * FROM products WHERE id = ?");
     $sth->execute($product_id);
     my $product = $sth->fetchrow_hashref();
+    $sth->finish();
     $dbh->disconnect();
     
     return $product;
@@ -80,6 +92,7 @@ sub get_product_by_sku {
     my $sth = $dbh->prepare("SELECT * FROM products WHERE sku = ?");
     $sth->execute($sku);
     my $product = $sth->fetchrow_hashref();
+    $sth->finish();
     $dbh->disconnect();
     
     return $product;
@@ -88,10 +101,24 @@ sub get_product_by_sku {
 sub update_product {
     my ($self, $product_id, %params) = @_;
     
+    my $dbh = $self->{db}->connect();
+    
+    # Check for duplicate SKU if SKU is being updated
+    if (exists $params{sku}) {
+        my $sth = $dbh->prepare("SELECT id FROM products WHERE sku = ? AND id != ?");
+        $sth->execute($params{sku}, $product_id);
+        if ($sth->fetchrow_array()) {
+            $sth->finish();
+            $dbh->disconnect();
+            return {success => 0, message => "Product with SKU '$params{sku}' already exists"};
+        }
+        $sth->finish();
+    }
+    
     my @fields;
     my @values;
     
-    foreach my $field (qw(name description category price cost stock_quantity reorder_level image_url is_active)) {
+    foreach my $field (qw(name description sku category price cost stock_quantity reorder_level image_url is_active)) {
         if (exists $params{$field}) {
             push @fields, "$field = ?";
             push @values, $params{$field};
@@ -165,6 +192,7 @@ sub get_low_stock_products {
     );
     $sth->execute();
     my $products = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $products;
@@ -182,6 +210,7 @@ sub search_products {
     my $pattern = "%$search_term%";
     $sth->execute($pattern, $pattern, $pattern);
     my $products = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $products;
@@ -198,6 +227,7 @@ sub get_products_by_category {
     );
     $sth->execute($category);
     my $products = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $products;
@@ -214,6 +244,7 @@ sub get_categories {
     );
     $sth->execute();
     my $categories = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return [map { $_->{category} } @$categories];

@@ -30,11 +30,14 @@ sub create_order {
     
     my $dbh = $self->{db}->connect();
     
+    my $order_id;
+    my $order_number;
+    
     $dbh->begin_work();
     
     eval {
         # Create order
-        my $order_number = $self->generate_order_number();
+        $order_number = $self->generate_order_number();
         
         $dbh->do(
             "INSERT INTO orders (order_number, customer_id, status, subtotal, tax, shipping, total, 
@@ -47,7 +50,7 @@ sub create_order {
             $params{shipping_address}, $params{billing_address}, $params{notes}
         );
         
-        my $order_id = $dbh->last_insert_id(undef, undef, 'orders', 'id');
+        $order_id = $dbh->last_insert_id(undef, undef, 'orders', 'id');
         
         # Create order items
         foreach my $item (@{$params{items}}) {
@@ -59,16 +62,23 @@ sub create_order {
                 $item->{quantity}, $item->{unit_price}, $item->{subtotal}
             );
             
-            # Update product stock
-            $self->{product_model}->update_stock(
+            # Update product stock directly (avoid nested transactions)
+            $dbh->do(
+                "UPDATE products SET stock_quantity = stock_quantity - ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                undef,
+                $item->{quantity}, $item->{product_id}
+            );
+            
+            # Record inventory transaction
+            $dbh->do(
+                "INSERT INTO inventory_transactions (product_id, quantity_change, transaction_type, reference_id, notes) 
+                 VALUES (?, ?, ?, ?, ?)",
+                undef,
                 $item->{product_id}, -$item->{quantity}, 'sale', $order_id, "Order $order_number"
             );
         }
         
         $dbh->commit();
-        
-        $dbh->disconnect();
-        return {success => 1, order_id => $order_id, order_number => $order_number};
     };
     
     if ($@) {
@@ -76,6 +86,10 @@ sub create_order {
         $dbh->disconnect();
         return {success => 0, message => "Failed to create order: $@"};
     }
+    
+    $dbh->disconnect();
+    
+    return {success => 1, order_id => $order_id, order_number => $order_number};
 }
 
 sub create_order_from_cart {
@@ -144,6 +158,7 @@ sub get_all_orders {
     );
     $sth->execute();
     my $orders = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $orders;
@@ -154,13 +169,15 @@ sub get_order_by_id {
     
     my $dbh = $self->{db}->connect();
     my $sth = $dbh->prepare(
-        "SELECT o.*, c.first_name, c.last_name, c.email 
+        "SELECT o.*, c.first_name, c.last_name, u.email 
          FROM orders o 
          LEFT JOIN customers c ON o.customer_id = c.id 
+         LEFT JOIN users u ON c.user_id = u.id 
          WHERE o.id = ?"
     );
     $sth->execute($order_id);
     my $order = $sth->fetchrow_hashref();
+    $sth->finish();
     $dbh->disconnect();
     
     return $order;
@@ -175,6 +192,7 @@ sub get_order_items {
     );
     $sth->execute($order_id);
     my $items = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $items;
@@ -194,6 +212,22 @@ sub update_order_status {
     return {success => 1};
 }
 
+sub delete_order {
+    my ($self, $order_id) = @_;
+    
+    my $dbh = $self->{db}->connect();
+    
+    # First delete order items
+    $dbh->do("DELETE FROM order_items WHERE order_id = ?", undef, $order_id);
+    
+    # Then delete the order
+    $dbh->do("DELETE FROM orders WHERE id = ?", undef, $order_id);
+    
+    $dbh->disconnect();
+    
+    return {success => 1, message => 'Order deleted successfully'};
+}
+
 sub get_orders_by_customer {
     my ($self, $customer_id) = @_;
     
@@ -203,6 +237,7 @@ sub get_orders_by_customer {
     );
     $sth->execute($customer_id);
     my $orders = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $orders;
@@ -221,6 +256,7 @@ sub get_orders_by_status {
     );
     $sth->execute($status);
     my $orders = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $orders;
@@ -241,6 +277,7 @@ sub get_recent_orders {
     );
     $sth->execute($limit);
     my $orders = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $orders;
@@ -259,8 +296,10 @@ sub get_order_stats {
     );
     $stats->{total_revenue} = $total_revenue;
     
-    # Total orders
-    my ($total_orders) = $dbh->selectrow_array("SELECT COUNT(*) FROM orders");
+    # Total orders (exclude delivered, cancelled, refunded)
+    my ($total_orders) = $dbh->selectrow_array(
+        "SELECT COUNT(*) FROM orders WHERE status NOT IN ('delivered', 'cancelled', 'refunded')"
+    );
     $stats->{total_orders} = $total_orders;
     
     # Orders by status
@@ -294,6 +333,7 @@ sub search_orders {
     my $pattern = "%$search_term%";
     $sth->execute($pattern, $pattern, $pattern);
     my $orders = $sth->fetchall_arrayref({});
+    $sth->finish();
     $dbh->disconnect();
     
     return $orders;

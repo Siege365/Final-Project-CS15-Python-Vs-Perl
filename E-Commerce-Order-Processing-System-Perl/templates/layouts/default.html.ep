@@ -20,8 +20,10 @@
                 <li><a href="/dashboard">Dashboard</a></li>
                 <li><a href="/products">Products</a></li>
                 <li><a href="/orders">Orders</a></li>
+                % if (has_role('customer')) {
                 <li><a href="/cart">Cart (<%= scalar @{get_cart()} %>)</a></li>
-                % if (!has_role('customer')) {
+                <li><a href="/account">Account</a></li>
+                % } else {
                 <li><a href="/customers">Customers</a></li>
                 <li><a href="/reports">Reports</a></li>
                 % }
@@ -41,5 +43,49 @@
         
         <%= content %>
     </div>
+    
+    <script>
+    function toggleDropdown(event, id) {
+        event.stopPropagation();
+        const dropdown = document.getElementById(id);
+        const allDropdowns = document.querySelectorAll('.dropdown-menu');
+        
+        // Close all other dropdowns
+        allDropdowns.forEach(menu => {
+            if (menu.id !== id) {
+                menu.classList.remove('show');
+                menu.classList.remove('show-upward');
+            }
+        });
+        
+        // Toggle current dropdown
+        const isShowing = dropdown.classList.contains('show');
+        dropdown.classList.toggle('show');
+        
+        // Check if dropdown should show upward (if too close to bottom)
+        if (!isShowing) {
+            const rect = dropdown.getBoundingClientRect();
+            const dropdownHeight = dropdown.offsetHeight || 150; // estimated height
+            const viewportHeight = window.innerHeight;
+            const spaceBelow = viewportHeight - rect.top;
+            
+            // If not enough space below, show upward
+            if (spaceBelow < dropdownHeight + 20) {
+                dropdown.classList.add('show-upward');
+            } else {
+                dropdown.classList.remove('show-upward');
+            }
+        }
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        const allDropdowns = document.querySelectorAll('.dropdown-menu');
+        allDropdowns.forEach(menu => {
+            menu.classList.remove('show');
+            menu.classList.remove('show-upward');
+        });
+    });
+    </script>
 </body>
 </html>
