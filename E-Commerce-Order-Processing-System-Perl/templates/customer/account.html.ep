@@ -6,7 +6,7 @@
 <div class="card">
     <h2>Personal Information</h2>
     
-    <form method="POST" action="/account/update">
+    <form method="POST" action="/account/update" id="accountForm">
         <div class="form-group">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" value="<%= $user->{username} %>" disabled>
@@ -40,7 +40,7 @@
         </div>
         
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="button" class="btn btn-primary" onclick="showSaveChangesModal()">Save Changes</button>
             <a href="/dashboard" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
@@ -71,8 +71,66 @@
 <div class="card">
     <h2>Warning</h2>
     <p style="margin-bottom: 1rem; color: #666;">Once you delete your account, there is no going back. Your account will be deactivated.</p>
-    <form method="POST" action="/account/delete" onsubmit="return confirm('Are you sure you want to delete your account? This action will deactivate your account.');" style="background: transparent; padding: 0; box-shadow: none;">
-        <button type="submit" class="btn" style="background: #dc3545; color: white;">Delete Account</button>
+    <form method="POST" action="/account/delete" id="deleteAccountForm" style="background: transparent; padding: 0; box-shadow: none;">
+        <button type="button" class="btn" style="background: #dc3545; color: white;" onclick="showDeleteAccountModal()">Delete Account</button>
     </form>
 </div>
+
+<!-- Save Changes Modal -->
+<div id="saveChangesModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirm Changes</h3>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to save these changes to your account?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('saveChangesModal')">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('accountForm').submit()">Save Changes</button>
+        </div>
+    </div>
 </div>
+
+<!-- Delete Account Modal -->
+<div id="deleteAccountModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Delete Account</h3>
+        </div>
+        <div class="modal-body">
+            <p><strong>Warning:</strong> This action cannot be undone!</p>
+            <p>Are you sure you want to delete your account? Your account will be deactivated and you will lose access to all your order history.</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('deleteAccountModal')">Cancel</button>
+            <button type="button" class="btn" style="background: #dc3545; color: white;" onclick="document.getElementById('deleteAccountForm').submit()">Delete Account</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function showSaveChangesModal() {
+    const form = document.getElementById('accountForm');
+    if (form.checkValidity()) {
+        document.getElementById('saveChangesModal').classList.add('show');
+    } else {
+        form.reportValidity();
+    }
+}
+
+function showDeleteAccountModal() {
+    document.getElementById('deleteAccountModal').classList.add('show');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('show');
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('show');
+    }
+}
+</script>

@@ -130,7 +130,6 @@ sub update_product {
     push @fields, "updated_at = CURRENT_TIMESTAMP";
     push @values, $product_id;
     
-    my $dbh = $self->{db}->connect();
     my $sql = "UPDATE products SET " . join(', ', @fields) . " WHERE id = ?";
     $dbh->do($sql, undef, @values);
     $dbh->disconnect();

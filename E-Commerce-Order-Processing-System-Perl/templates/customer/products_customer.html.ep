@@ -82,25 +82,25 @@
         </tbody>
     </table>
     
-    % if (defined $total_pages && $total_pages > 1) {
+    % if (defined stash('total_pages') && stash('total_pages') > 1) {
     <div style="text-align: center; margin-top: 30px;">
         <div class="pagination" style="display: inline-flex;">
-            % if ($page > 1) {
-            <a href="?page=<%= $page - 1 %>&sort=<%= stash('sort') %>&search=<%= param('search') // '' %>&category=<%= param('category') // '' %>" class="btn btn-sm">&laquo; Prev</a>
+            % if (stash('page') > 1) {
+            <a href="?page=<%= stash('page') - 1 %>&sort=<%= stash('sort') %>&search=<%= param('search') // '' %>&category=<%= param('category') // '' %>" class="btn btn-sm">&laquo; Prev</a>
             % }
             
-            % for my $p (1..$total_pages) {
-                % if ($p == $page) {
+            % for my $p (1..stash('total_pages')) {
+                % if ($p == stash('page')) {
                 <span class="btn btn-sm btn-primary"><%= $p %></span>
-                % } elsif ($p == 1 || $p == $total_pages || abs($p - $page) <= 2) {
+                % } elsif ($p == 1 || $p == stash('total_pages') || abs($p - stash('page')) <= 2) {
                 <a href="?page=<%= $p %>&sort=<%= stash('sort') %>&search=<%= param('search') // '' %>&category=<%= param('category') // '' %>" class="btn btn-sm"><%= $p %></a>
-                % } elsif (abs($p - $page) == 3) {
+                % } elsif (abs($p - stash('page')) == 3) {
                 <span>...</span>
                 % }
             % }
             
-            % if ($page < $total_pages) {
-            <a href="?page=<%= $page + 1 %>&sort=<%= stash('sort') %>&search=<%= param('search') // '' %>&category=<%= param('category') // '' %>" class="btn btn-sm">Next &raquo;</a>
+            % if (stash('page') < stash('total_pages')) {
+            <a href="?page=<%= stash('page') + 1 %>&sort=<%= stash('sort') %>&search=<%= param('search') // '' %>&category=<%= param('category') // '' %>" class="btn btn-sm">Next &raquo;</a>
             % }
         </div>
     </div>

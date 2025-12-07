@@ -64,28 +64,4 @@
             % }
         </tbody>
     </table>
-    
-    % if (defined $total_pages && $total_pages > 1) {
-    <div style="text-align: center; margin-top: 30px;">
-        <div class="pagination" style="display: inline-flex;">
-        % if ($page > 1) {
-        <a href="?page=<%= $page - 1 %>" class="btn btn-sm">&laquo; Prev</a>
-        % }
-        
-        % for my $p (1..$total_pages) {
-            % if ($p == $page) {
-            <span class="btn btn-sm btn-primary"><%= $p %></span>
-            % } elsif ($p == 1 || $p == $total_pages || abs($p - $page) <= 2) {
-            <a href="?page=<%= $p %>" class="btn btn-sm"><%= $p %></a>
-            % } elsif (abs($p - $page) == 3) {
-            <span>...</span>
-            % }
-        % }
-        
-        % if ($page < $total_pages) {
-        <a href="?page=<%= $page + 1 %>" class="btn btn-sm">Next &raquo;</a>
-        % }
-        </div>
-    </div>
-    % }
 </div>

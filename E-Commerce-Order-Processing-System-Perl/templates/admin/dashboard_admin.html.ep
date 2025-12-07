@@ -1,0 +1,103 @@
+% layout 'default';
+% title 'Dashboard';
+
+<h1>Dashboard</h1>
+
+% if ($role eq 'admin' || $role eq 'staff') {
+<!-- Admin/Staff Dashboard -->
+<div class="metrics">
+    <div class="metric-card">
+        <h3>Total Products</h3>
+        <div class="value"><%= $stats->{total_products} %></div>
+    </div>
+    
+    <div class="metric-card warning">
+        <h3>Low Stock Items</h3>
+        <div class="value"><%= $stats->{low_stock} %></div>
+    </div>
+    
+    <div class="metric-card success">
+        <h3>Total Orders</h3>
+        <div class="value"><%= $stats->{total_orders} %></div>
+    </div>
+</div>
+% } else {
+<!-- Customer Dashboard -->
+<div class="metrics">
+    <div class="metric-card success">
+        <h3>Total Orders</h3>
+        <div class="value"><%= $stats->{total_orders} %></div>
+    </div>
+    
+    <div class="metric-card info">
+        <h3>Shipped Orders</h3>
+        <div class="value"><%= $stats->{shipped_orders} %></div>
+    </div>
+</div>
+% }
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2 style="margin: 0;">Recent Orders</h2>
+        % if ($role eq 'admin' || $role eq 'staff') {
+        <a href="/orders" class="btn btn-sm">View All Orders &raquo;</a>
+        % }
+    </div>
+    % if ($stats->{recent_orders} && @{$stats->{recent_orders}}) {
+    <table>
+        <thead>
+            <tr>
+                <th>Order #</th>
+                % if ($role eq 'admin' || $role eq 'staff') {
+                <th>Customer</th>
+                % }
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            % for my $order (@{$stats->{recent_orders}}) {
+            <tr>
+                <td><a href="/orders/<%= $order->{id} %>"><%= $order->{order_number} %></a></td>
+                % if ($role eq 'admin' || $role eq 'staff') {
+                <td><%= $order->{first_name} || '' %> <%= $order->{last_name} || '' %></td>
+                % }
+                <td>$<%= sprintf("%.2f", $order->{total}) %></td>
+                <td><span class="status <%= $order->{status} %>"><%= $order->{status} %></span></td>
+                <td><%= $order->{created_at} %></td>
+            </tr>
+            % }
+        </tbody>
+    </table>
+    
+    % unless ($role eq 'admin' || $role eq 'staff') {
+        % if (defined $stats->{total_pages} && $stats->{total_pages} > 1) {
+        <div style="text-align: center; margin-top: 30px;">
+            <div class="pagination" style="display: inline-flex;">
+            % if ($stats->{page} > 1) {
+            <a href="?page=<%= $stats->{page} - 1 %>" class="btn btn-sm">&laquo; Prev</a>
+            % }
+            
+            % for my $p (1..$stats->{total_pages}) {
+                % if ($p == $stats->{page}) {
+                <span class="btn btn-sm btn-primary"><%= $p %></span>
+                % } elsif ($p == 1 || $p == $stats->{total_pages} || abs($p - $stats->{page}) <= 2) {
+                <a href="?page=<%= $p %>" class="btn btn-sm"><%= $p %></a>
+                % } elsif (abs($p - $stats->{page}) == 3) {
+                <span>...</span>
+                % }
+            % }
+            
+            % if ($stats->{page} < $stats->{total_pages}) {
+            <a href="?page=<%= $stats->{page} + 1 %>" class="btn btn-sm">Next &raquo;</a>
+            % }
+            </div>
+        </div>
+        % }
+    % }
+    
+    % } else {
+    <p>No recent orders.</p>
+    % }
+</div>

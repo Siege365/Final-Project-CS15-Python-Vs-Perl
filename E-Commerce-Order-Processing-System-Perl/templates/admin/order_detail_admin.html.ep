@@ -1,0 +1,163 @@
+% layout 'default';
+% title 'Order Details';
+
+<div class="order-detail">
+    <div class="order-header">
+        <div>
+            <h2>Order <%= $order->{order_number} %></h2>
+            <span class="status <%= $order->{status} %>"><%= ucfirst($order->{status}) %></span>
+        </div>
+        % if (session('role') eq 'admin' || session('role') eq 'staff') {
+        <div class="dropdown">
+            <button class="btn btn-sm" onclick="toggleDropdown(event, 'order-actions')" style="font-size: 20px; padding: 5px 12px;">⋮</button>
+            <div id="order-actions" class="dropdown-menu">
+                <button type="button" onclick="showUpdateStatusModal()">Update Status</button>
+                <button type="button" style="color: #dc3545;" onclick="showDeleteOrderModal()">Delete Order</button>
+            </div>
+        </div>
+        % }
+    </div>
+    
+    <div class="order-info">
+        % if (session('role') eq 'admin' || session('role') eq 'staff') {
+        <div class="order-info-item">
+            <label>Customer</label>
+            <div class="value"><%= $order->{first_name} || 'N/A' %> <%= $order->{last_name} || '' %></div>
+        </div>
+        <div class="order-info-item">
+            <label>Email</label>
+            <div class="value"><%= $order->{email} || 'N/A' %></div>
+        </div>
+        % }
+        <div class="order-info-item">
+            <label>Payment Method</label>
+            <div class="value"><%= ucfirst($order->{payment_method} =~ s/_/ /gr) %></div>
+        </div>
+        <div class="order-info-item">
+            <label>Order Date</label>
+            <div class="value"><%= $order->{created_at} %></div>
+        </div>
+    </div>
+    
+    <div class="card mt-2">
+        <h3>Shipping Address</h3>
+        <p><%= $order->{shipping_address} %></p>
+    </div>
+    
+    <div class="card">
+        <h3>Order Items</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                % for my $item (@$items) {
+                <tr>
+                    <td><%= $item->{product_name} %></td>
+                    <td><%= $item->{product_sku} %></td>
+                    <td><%= $item->{quantity} %></td>
+                    <td>$<%= sprintf("%.2f", $item->{unit_price}) %></td>
+                    <td>$<%= sprintf("%.2f", $item->{subtotal}) %></td>
+                </tr>
+                % }
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="cart-summary">
+        <div class="line">
+            <span>Subtotal:</span>
+            <span>$<%= sprintf("%.2f", $order->{subtotal}) %></span>
+        </div>
+        <div class="line">
+            <span>Tax:</span>
+            <span>$<%= sprintf("%.2f", $order->{tax}) %></span>
+        </div>
+        <div class="line">
+            <span>Shipping:</span>
+            <span>$<%= sprintf("%.2f", $order->{shipping}) %></span>
+        </div>
+        <div class="line total">
+            <span>Total:</span>
+            <span>$<%= sprintf("%.2f", $order->{total}) %></span>
+        </div>
+    </div>
+</div>
+
+% if (session('role') eq 'admin' || session('role') eq 'staff') {
+<!-- Update Status Modal -->
+<div id="updateStatusModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Update Order Status</h3>
+        </div>
+        <form method="POST" action="/orders/<%= $order->{id} %>/update-status" id="updateStatusForm">
+            <div class="modal-body">
+                <p>Update status for <strong>Order #<%= $order->{order_number} %></strong></p>
+                <div class="form-group">
+                    <label for="status">New Status</label>
+                    <select name="status" id="status" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="" disabled selected hidden>-- Select Status --</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('updateStatusModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Order Modal -->
+<div id="deleteOrderModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Delete Order</h3>
+        </div>
+        <form method="POST" action="/orders/<%= $order->{id} %>/delete" id="deleteOrderForm">
+            <div class="modal-body">
+                <p><strong>Warning:</strong> This action cannot be undone!</p>
+                <p>Are you sure you want to delete <strong>Order #<%= $order->{order_number} %></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('deleteOrderModal')">Cancel</button>
+                <button type="submit" class="btn" style="background: #dc3545; color: white;">Delete Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showUpdateStatusModal() {
+    document.getElementById('updateStatusModal').classList.add('show');
+    document.getElementById('order-actions').classList.remove('show');
+}
+
+function showDeleteOrderModal() {
+    document.getElementById('deleteOrderModal').classList.add('show');
+    document.getElementById('order-actions').classList.remove('show');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('show');
+}
+
+window.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('show');
+    }
+});
+</script>
+% }

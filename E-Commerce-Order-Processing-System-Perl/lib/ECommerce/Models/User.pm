@@ -37,7 +37,16 @@ sub create_user {
     
     if ($@) {
         $dbh->disconnect();
-        return {success => 0, message => "Failed to create user: $@"};
+        my $error = $@;
+        
+        # Handle specific constraint violations
+        if ($error =~ /UNIQUE constraint failed: users\.email/) {
+            return {success => 0, message => "Email address already registered"};
+        } elsif ($error =~ /UNIQUE constraint failed: users\.username/) {
+            return {success => 0, message => "Username already taken"};
+        }
+        
+        return {success => 0, message => "Failed to create user"};
     }
     
     my $user_id = $dbh->last_insert_id(undef, undef, 'users', 'id');

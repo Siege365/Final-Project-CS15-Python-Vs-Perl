@@ -6,7 +6,7 @@
 </div>
 
 <div class="card">
-    <form method="post" action="/products/<%= $product->{id} %>/edit" enctype="multipart/form-data">
+    <form method="post" action="/products/<%= $product->{id} %>/edit" enctype="multipart/form-data" id="editProductForm">
         <div class="form-group">
             <label for="name">Product Name *</label>
             <input type="text" id="name" name="name" value="<%= $product->{name} // '' %>" required>
@@ -72,11 +72,56 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Update Product</button>
+            <button type="button" class="btn btn-primary" onclick="showUpdateProductModal()">Update Product</button>
             <a href="/products" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
 </div>
+
+<!-- Update Product Modal -->
+<div id="updateProductModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Update Product</h3>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to update this product?</p>
+            <p><strong id="updateProductName"></strong></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeUpdateProductModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="submitUpdateProductForm()">Update Product</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function showUpdateProductModal() {
+    const form = document.getElementById('editProductForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const productName = document.getElementById('name').value;
+    document.getElementById('updateProductName').textContent = productName;
+    document.getElementById('updateProductModal').classList.add('show');
+}
+
+function closeUpdateProductModal() {
+    document.getElementById('updateProductModal').classList.remove('show');
+}
+
+function submitUpdateProductForm() {
+    document.getElementById('editProductForm').submit();
+}
+
+window.addEventListener('click', function(event) {
+    if (event.target.id === 'updateProductModal') {
+        closeUpdateProductModal();
+    }
+});
+</script>
 
 <style>
 .form-row {
