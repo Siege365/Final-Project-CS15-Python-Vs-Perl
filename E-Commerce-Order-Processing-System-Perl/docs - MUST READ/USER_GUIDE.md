@@ -55,7 +55,9 @@ Or filter by category:
 2. Set quantity (if needed)
 3. Click "Add to Cart"
 4. View cart counter in navigation
+Note: The product listing uses an AJAX Add‑to‑Cart flow. When you click **Add to Cart** the page will not reload — a small, non-blocking toast appears near the header confirming the product was added. The cart badge in the navigation shows the number of distinct products in your cart (one per product), not the sum of quantities.
 
+If your browser has JavaScript disabled the server falls back to the traditional POST + flash message flow.
 ### Shopping Cart
 
 1. Click "Cart" in navigation
@@ -69,6 +71,11 @@ Or filter by category:
    - Tax (8%)
    - Shipping ($5 or FREE over $100)
    - Grand Total
+
+Notes:
+
+- Product thumbnails are shown in the cart if available (`image_url` on the product). If a product has no image the cart uses `public/images/placeholder.svg` as a fallback.
+- The cart page enriches older cart entries with image URLs during render so images appear consistently.
 
 ### Checkout
 

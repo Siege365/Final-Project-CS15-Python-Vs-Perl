@@ -1,8 +1,8 @@
 # Installation Guide
 
-## E-Commerce Order Processing System - Perl
+## ShopPerl (E-Commerce Order Processing System - Perl)
 
-Complete installation instructions for Windows, macOS, and Linux.
+Platform-specific installation instructions and quick start steps.
 
 ## Prerequisites
 
@@ -25,34 +25,31 @@ cpan --version
 
 ### Step 2: Install Dependencies
 
-Open Command Prompt or PowerShell:
+Open PowerShell (recommended on Windows) and run from the project root:
 
-```cmd
-cd path\to\E-Commerce-Order-Processing-System-Perl
+```powershell
+cd 'C:\path\to\E-Commerce-Order-Processing-System-Perl'
 cpanm --installdeps .
 ```
 
-If cpanm is not available:
+If `cpanm` is not installed, install it first:
 
-```cmd
+```powershell
 cpan App::cpanminus
 cpanm --installdeps .
 ```
 
-Manual installation:
+Or install required modules manually:
 
-```cmd
-cpanm Mojolicious
-cpanm DBI
-cpanm DBD::SQLite
-cpanm Crypt::Bcrypt
-cpanm JSON
-cpanm Time::Piece
+```powershell
+cpanm Mojolicious DBI DBD::SQLite Crypt::Bcrypt JSON Time::Piece
 ```
 
-### Step 3: Run Application
+### Step 3: Run Application (Development)
 
-```cmd
+Start the development server:
+
+```powershell
 perl app.pl daemon
 ```
 
@@ -129,38 +126,29 @@ perl app.pl daemon
 
 ### Using Hypnotoad (Recommended)
 
-```bash
+```powershell
 hypnotoad app.pl
 ```
 
-To stop:
+To stop Hypnotoad:
 
-```bash
+```powershell
 hypnotoad -s app.pl
 ```
 
-### Configuration
+### Verification
 
-Edit `app.pl` for production settings:
+1. Confirm database file was created: `data/ecommerce.db`
 
-```perl
-app->config(hypnotoad => {
-    listen => ['http://*:3000'],
-    workers => 4,
-    pid_file => 'app.pid'
-});
-```
+2. Start the app and verify the web UI at `http://localhost:3000`.
 
-## Verification
+3. Test default credentials (created by sample data):
 
-### 1. Check Database
+- Admin: `admin` / `admin123`
+- Staff: `staff` / `staff123`
+- Customer: `customer` / `customer123`
 
-After first run, verify database exists:
-
-```
-data/ecommerce.db
-```
-
+4. Test typical flows: browse products, add to cart (note: Add-to-Cart uses AJAX and displays an in-page toast), place an order and check order history.
 ### 2. Test Login
 
 - URL: http://localhost:3000
@@ -178,40 +166,36 @@ data/ecommerce.db
 
 ### Module Installation Fails
 
-Try with --force:
+Try reinstalling or forcing the install:
 
-```bash
+```powershell
 cpanm --force DBD::SQLite
 ```
 
 ### Database Permission Issues
 
-Ensure data/ directory is writable:
-
-```bash
-chmod 755 data/
-```
+Ensure the `data/` directory is writable by the user running the application. On Windows check file permissions in Explorer.
 
 ### Port Already in Use
 
-Change port in app.pl or kill existing process:
+Find and stop the process using the port:
 
-```bash
-# Linux/Mac
-lsof -i :3000
-kill -9 <PID>
-
+```powershell
 # Windows
 netstat -ano | findstr :3000
 taskkill /PID <PID> /F
+
+# macOS / Linux
+lsof -i :3000
+kill -9 <PID>
 ```
 
 ### Cannot Find Modules
 
-Add lib path:
+Make sure the `lib` directory is included in `PERL5LIB` if you run scripts from a different working directory:
 
-```bash
-export PERL5LIB=/path/to/E-Commerce-Order-Processing-System-Perl/lib:$PERL5LIB
+```powershell
+$env:PERL5LIB = 'C:\path\to\E-Commerce-Order-Processing-System-Perl\lib;' + $env:PERL5LIB
 ```
 
 ## Uninstallation

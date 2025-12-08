@@ -1,6 +1,6 @@
-# E-Commerce Order Processing System (Perl)
+# ShopPerl – E‑Commerce with a Perl‑sonality (Perl)
 
-A comprehensive, full-featured e-commerce order processing system built with Perl and the Mojolicious web framework. This system provides complete product management, order processing, customer management, and analytics capabilities.
+A compact, practical e‑commerce order processing system implemented in Perl with the Mojolicious web framework. The project includes product management, a session-based shopping cart, order checkout, customer management and basic analytics. The documentation reflects recent UX updates: the site uses a lightweight in-page toast for Add‑to‑Cart confirmations and the cart badge counts distinct products.
 
 ## 🚀 Features
 
@@ -42,13 +42,13 @@ A comprehensive, full-featured e-commerce order processing system built with Per
 ## 📋 Requirements
 
 - **Perl**: 5.30 or higher
-- **CPAN Modules**:
+- **CPAN Modules** (example):
   - Mojolicious >= 9.0
   - DBI >= 1.643
   - DBD::SQLite >= 1.70
   - Crypt::Bcrypt >= 0.011
-  - JSON >= 4.0
-  - Time::Piece >= 1.33
+  - JSON
+  - Time::Piece
 
 ## 🛠️ Installation
 
@@ -86,17 +86,19 @@ cpanm Mojolicious DBI DBD::SQLite Crypt::Bcrypt JSON Time::Piece
 
 ### 5. Initialize Database
 
-The database will be automatically initialized on first run with sample data.
+The database is initialized automatically on first run. The initialization code lives in `lib/ECommerce/Database.pm` and will create `data/ecommerce.db` with sample users, customers and products when the application is started.
 
-### 6. Run Application
+### 6. Run Application (Development)
 
-```bash
+From the project root run the Mojolicious development server:
+
+```powershell
 perl app.pl daemon
 ```
 
-Or for production with Hypnotoad:
+For a production-ready multi-worker server use Hypnotoad:
 
-```bash
+```powershell
 hypnotoad app.pl
 ```
 
@@ -115,67 +117,36 @@ Open your browser to: **http://localhost:3000**
 ## 📁 Project Structure
 
 ```
-E-Commerce-Order-Processing-System-Perl/
+ShopPerl/ (E-Commerce-Order-Processing-System-Perl)
 │
-├── app.pl                          # Main application entry point
+├── app.pl                          # Main application entry point (loads helpers, sessions and routes)
 ├── cpanfile                        # Perl dependencies
-│
-├── lib/
-│   └── ECommerce/
-│       ├── Config.pm               # Configuration module
-│       ├── Database.pm             # Database initialization
-│       │
-│       ├── Models/
-│       │   ├── User.pm             # User model
-│       │   ├── Product.pm          # Product model
-│       │   ├── Order.pm            # Order model
-│       │   └── Customer.pm         # Customer model
-│       │
-│       └── Controllers/
-│           └── Auth.pm             # Authentication controller
-│
-├── templates/
-│   ├── layouts/
-│   │   └── default.html.ep         # Main layout template
-│   │
-│   ├── login.html.ep               # Login page
-│   ├── register.html.ep            # Registration page
-│   ├── dashboard.html.ep           # Dashboard view
-│   ├── products.html.ep            # Product catalog
-│   ├── cart.html.ep                # Shopping cart
-│   ├── orders.html.ep              # Order list
-│   ├── order_detail.html.ep        # Order details
-│   ├── customers.html.ep           # Customer management
-│   └── reports.html.ep             # Reports & analytics
-│
-├── public/
-│   └── css/
-│       └── style.css               # Application styles (NO GRADIENTS)
-│
-├── data/
-│   └── ecommerce.db                # SQLite database (auto-generated)
-│
-└── docs/
-    ├── README.md                   # This file
-    ├── INSTALLATION.md             # Detailed installation guide
-    ├── USER_GUIDE.md               # User manual
-    ├── ARCHITECTURE.md             # System architecture
-    ├── API_DOCUMENTATION.md        # API reference
-    ├── PROJECT_SUMMARY.md          # Project summary
-    └── FILE_LISTING.md             # Complete file listing
+├── routes/                         # Route files (shared_routes.pl, admin_routes.pl, customer_routes.pl)
+├── lib/ECommerce/                  # Application Perl modules
+│   ├── Config.pm
+│   ├── Database.pm                  # DB initialization & sample data
+│   ├── Models/                      # Product, User, Order, Customer models
+│   └── Controllers/                 # Controller classes (Auth, Customer, Admin)
+├── templates/                       # Embedded Perl templates (layouts + pages)
+├── public/                          # Static assets (css, js, images)
+│   ├── css/
+│   ├── js/
+│   └── images/                      # e.g. placeholder.svg
+├── data/                            # SQLite database file `ecommerce.db` (auto-created)
+└── docs/                            # Project documentation (this folder)
 ```
 
 ## 🎨 Design Philosophy
 
-- **No Gradients**: All colors are solid - clean, professional design
-- **Responsive**: Mobile-friendly design
-- **User-Friendly**: Intuitive interface for all user roles
-- **Modular**: Well-organized code structure
+- **No Gradients**: Solid colors only
+- **Responsive**: Mobile-friendly layout and a functional mobile hamburger menu
+- **User-Friendly**: Simple, non-blocking feedback (Add-to-Cart uses in-page toast)
+- **Modular**: Clear separation of routes, controllers, models and templates
 - **Documented**: Comprehensive inline and external documentation
 
 ## 🔧 Configuration
 
-Edit `lib/ECommerce/Config.pm` to customize:
+Edit `lib/ECommerce/Config.pm` to customize runtime settings, for example:
 
 - Database path
 - Tax rate (default: 8%)
@@ -185,28 +156,28 @@ Edit `lib/ECommerce/Config.pm` to customize:
 - Items per page
 - Color scheme
 
+Other runtime options (session timeout, secrets) are set in `app.pl`.
+
 ## 💾 Database Schema
 
-### Tables:
+The application uses SQLite and creates these tables on first run (see `lib/ECommerce/Database.pm` and `docs/ARCHITECTURE.md`):
 
 1. **users** - User authentication and roles
 2. **customers** - Customer information
-3. **products** - Product catalog
+3. **products** - Product catalog (includes `image_url`)
 4. **orders** - Order records
 5. **order_items** - Order line items
 6. **inventory_transactions** - Inventory tracking
 
-See `docs/ARCHITECTURE.md` for detailed schema.
+Note: Product records include `image_url`; the app supplies a `public/images/placeholder.svg` when an image is missing.
 
 ## 🚦 Quick Start
 
-1. **Install dependencies**: `cpanm --installdeps .`
-2. **Run application**: `perl app.pl daemon`
-3. **Login**: Go to http://localhost:3000
-4. **Browse products**: Navigate to Products page
-5. **Add to cart**: Select products and add to cart
-6. **Checkout**: Complete purchase
-7. **View orders**: Check your order history
+1. Install dependencies: `cpanm --installdeps .`
+2. Run application: `perl app.pl daemon`
+3. Open `http://localhost:3000` in your browser
+4. Browse products and add items to cart (Add-to-Cart uses AJAX with an in-page toast)
+5. Checkout and view order history
 
 ## 📊 Features by Role
 
@@ -318,16 +289,16 @@ For issues or questions:
 
 ## 🎯 Future Enhancements
 
-- Product images upload
+- Product image upload and management UI
 - Email notifications
 - Payment gateway integration
-- Advanced search
-- Export functionality
-- Multi-language support
+- Advanced search and filters
+- Export functionality and reporting
+- Internationalization and localization
 - API endpoints for mobile apps
 
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: December 2, 2025  
+**Last Updated**: December 8, 2025  
 **Built with**: Perl & Mojolicious

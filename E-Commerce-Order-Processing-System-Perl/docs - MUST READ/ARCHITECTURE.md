@@ -25,12 +25,16 @@ This system follows the **MVC (Model-View-Controller)** architecture pattern bui
 - Session management
 - Helper methods
 
+Note: The project loads route files from a `routes/` directory (for example `routes/shared_routes.pl`, `routes/admin_routes.pl`, `routes/customer_routes.pl`) and registers them in `app.pl`. Several application-level helpers are defined in `app.pl` (for example: `is_logged_in`, `current_user`, `get_cart`, `get_cart_count`, `add_to_cart`, `clear_cart`) and sessions are configured there (secrets and default expiration).
+
 ### 2. Controller Layer (lib/ECommerce/Controllers/)
 
 - **Auth.pm**: Authentication and authorization
 - Business logic
 - Request validation
 - Response formatting
+
+Note: Controllers are organized under `lib/ECommerce/Controllers/` and may include sub-directories such as `Customer/` (for customer-facing controllers like `CartController.pm`) and `Admin/` (for admin-facing controllers). Controllers handle form submissions, JSON API responses (AJAX), and template rendering.
 
 ### 3. Model Layer (lib/ECommerce/Models/)
 
@@ -47,6 +51,10 @@ This system follows the **MVC (Model-View-Controller)** architecture pattern bui
 - Layout system
 - Reusable components
 - Form handling
+
+Notes:
+- The main layout is `templates/layouts/default.html.ep`. It contains the header/navigation and includes client-side scripts and styles.
+- Some templates include lightweight UI components such as an in-page Add‑to‑Cart toast. Product listing templates add `class="ajax-add-cart"` to forms so client-side JS can intercept submission and call the controller via fetch/XHR.
 
 ### 5. Configuration (lib/ECommerce/Config.pm)
 
@@ -180,6 +188,12 @@ CREATE TABLE inventory_transactions (
 
    - Session stores cart items
    - Quantity validated against stock
+
+    Implementation notes:
+
+    - Add-to-Cart is implemented to support both traditional POSTs and AJAX: when the client submits with `X-Requested-With: XMLHttpRequest` the Cart controller returns JSON (for example `{ success => 1, product_name => 'Name', cart_count => 3 }`) and does not set the server-side flash; non-AJAX submissions fall back to setting flash and redirecting.
+
+    - The session cart is stored as an arrayref of item hashrefs. Each item may include `product_id`, `product_name`, `quantity`, `unit_price`, and `image_url`. Older cart entries are enriched with `image_url` when the cart is viewed so templates can render images with a `public/images/placeholder.svg` fallback.
 
 2. **Customer views cart**
 
@@ -394,6 +408,11 @@ hypnotoad app.pl
 │  SQLite Database │
 │  (ecommerce.db)  │
 └──────────────────┘
+
+### Static assets and client behavior
+
+- Static assets (CSS, JS, images) are served from `public/`. The project includes component CSS (for modal/toast styles) in `public/css/components/` and small client-side scripts in `public/js/` to handle the responsive hamburger menu, toast positioning, and AJAX form interception.
+- Server-rendered flash messages remain in the layout for non-AJAX flows; AJAX Add-to-Cart uses the client-side toast for user feedback.
 ```
 
 ### Reverse Proxy (Production)

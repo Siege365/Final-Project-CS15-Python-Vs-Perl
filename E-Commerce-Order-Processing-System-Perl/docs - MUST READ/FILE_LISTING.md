@@ -8,46 +8,36 @@
 ---
 
 ## Directory Structure with File Details
-
-### Root Directory
-
-#### app.pl (340 lines)
-
-- **Purpose**: Main application entry point
-- **Type**: Perl/Mojolicious application
-- **Features**:
-  - Route definitions (15 routes)
+  - Route loading (from `routes/` files) and registration
   - Authentication middleware
-  - Session helpers
+  - Session helpers (cart helpers, user helpers)
   - Request handlers
-  - Shopping cart logic
+  - Shopping cart logic (session-backed cart, distinct-product count)
   - Order checkout process
   - Product catalog
   - Customer management
   - Reports and analytics
-- **Dependencies**: All models, controllers, Config.pm
-
-#### cpanfile (12 lines)
-
-- **Purpose**: Perl dependency management
-- **Modules**:
-  - Mojolicious >= 9.0
-  - DBI >= 1.643
+ - **Dependencies**: Models, controllers, Config.pm
+  - Order checkout process
+  - Product catalog
+  - Customer management
+ - **Features**:
+  - Creates 6 tables
+  - Loads 3 default users
+  - Loads 5 sample customers
+  - Loads 20 sample products
+  - SQLite with foreign keys
+  - Database initialization is run at app startup (called from `app.pl`)
   - DBD::SQLite >= 1.70
   - Crypt::Bcrypt >= 0.011
   - JSON >= 4.0
   - Time::Piece >= 1.33
   - File::Basename, File::Spec
-  - Digest::SHA, MIME::Base64
-  - Data::Dumper, List::Util
 
----
-
+Note: Additional controllers exist under `lib/ECommerce/Controllers/Customer/` (for customer-facing functionality such as the cart) and `lib/ECommerce/Controllers/Admin/` for administrative endpoints. Some controllers return JSON for AJAX requests (Add-to-Cart), while others render templates.
 ### lib/ECommerce/ Directory
 
 #### Config.pm (110 lines)
-
-- **Purpose**: Application configuration module
 - **Package**: ECommerce::Config
 - **Contents**:
   - BASE_DIR, DB_PATH
@@ -55,18 +45,22 @@
   - @ORDER_STATUS (6 statuses)
   - @PAYMENT_METHODS (5 methods)
   - @PRODUCT_CATEGORIES (10 categories)
+  - Product images (uses `image_url`, falls back to `public/images/placeholder.svg`)
+  - Cart template updated to render thumbnails for each cart item (image if available)
   - @USER_ROLES (3 roles)
   - %COLORS (8 solid colors, NO gradients)
 - **Documentation**: POD format
 
 #### Database.pm (260 lines)
 
-- **Purpose**: Database initialization and management
-- **Package**: ECommerce::Database
+Additional assets:
+- `public/css/components/modal.css` (modal + toast styles and animations)
+- `public/js/` (client-side scripts for toast, header sticky behavior, and mobile nav)
+- `public/images/placeholder.svg` (fallback product image)
 - **Methods**:
   - new() - Constructor
   - connect() - Database connection
-  - initialize_database() - Full setup
+ - **Target**: Developers
   - create_tables() - Schema creation
   - create_sample_data() - Populate data
 - **Features**:

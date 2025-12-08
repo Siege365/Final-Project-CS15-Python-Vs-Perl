@@ -1,6 +1,6 @@
 # Project Summary
 
-## E-Commerce Order Processing System - Perl
+## ShopPerl – E‑Commerce with a Perl‑sonality
 
 **Version**: 1.0.0  
 **Language**: Perl 5.30+  
@@ -12,7 +12,7 @@
 
 ## Project Overview
 
-A comprehensive, full-featured e-commerce order processing system built entirely in Perl using the Mojolicious web framework. The system provides complete product management, shopping cart functionality, order processing, customer management, and business analytics.
+ShopPerl is a compact, educational e-commerce order processing system built with Perl and Mojolicious. It provides product management, a session-backed shopping cart, order checkout, customer management and reporting. The UI includes a lightweight AJAX Add‑to‑Cart flow that displays a non-blocking toast confirmation and updates the cart badge (which shows the number of distinct products in the cart).
 
 ---
 
@@ -46,6 +46,11 @@ A comprehensive, full-featured e-commerce order processing system built entirely
 - Real-time price calculations
 - Subtotal, tax, and shipping calculations
 - Persistent cart (session-based)
+
+Notes:
+
+- The cart is stored in the user session as an arrayref of item hashrefs. The navigation cart badge counts distinct product entries (one per product) rather than summing quantities.
+- Add-to-Cart supports AJAX (returns JSON) and falls back to flash+redirect for non-JS clients.
 
 ### ✅ Order Processing
 
@@ -97,51 +102,22 @@ A comprehensive, full-featured e-commerce order processing system built entirely
 ## Project Structure
 
 ```
-📦 E-Commerce-Order-Processing-System-Perl
-├── 📄 app.pl                       (Main application - 340 lines)
-├── 📄 cpanfile                     (Dependencies - 12 modules)
-│
-├── 📁 lib/ECommerce/
-│   ├── 📄 Config.pm                (Configuration - 110 lines)
-│   ├── 📄 Database.pm              (DB layer - 260 lines)
-│   │
-│   ├── 📁 Models/
-│   │   ├── 📄 User.pm              (User model - 140 lines)
-│   │   ├── 📄 Product.pm           (Product model - 200 lines)
-│   │   ├── 📄 Order.pm             (Order model - 280 lines)
-│   │   └── 📄 Customer.pm          (Customer model - 170 lines)
-│   │
-│   └── 📁 Controllers/
-│       └── 📄 Auth.pm              (Authentication - 80 lines)
-│
-├── 📁 templates/
-│   ├── 📁 layouts/
-│   │   └── 📄 default.html.ep      (Main layout)
-│   │
-│   ├── 📄 login.html.ep            (Login page)
-│   ├── 📄 register.html.ep         (Registration)
-│   ├── 📄 dashboard.html.ep        (Dashboard)
-│   ├── 📄 products.html.ep         (Product catalog)
-│   ├── 📄 cart.html.ep             (Shopping cart)
-│   ├── 📄 orders.html.ep           (Order list)
-│   ├── 📄 order_detail.html.ep     (Order details)
-│   ├── 📄 customers.html.ep        (Customer management)
-│   └── 📄 reports.html.ep          (Analytics)
-│
-├── 📁 public/css/
-│   └── 📄 style.css                (Styles - 600+ lines, NO gradients)
-│
-├── 📁 data/
-│   └── 📄 ecommerce.db             (SQLite database - auto-generated)
-│
-└── 📁 docs/
-    ├── 📄 README.md                (Main documentation)
-    ├── 📄 INSTALLATION.md          (Installation guide)
-    ├── 📄 USER_GUIDE.md            (User manual)
-    ├── 📄 ARCHITECTURE.md          (System architecture)
-    ├── 📄 API_DOCUMENTATION.md     (API reference)
-    ├── 📄 PROJECT_SUMMARY.md       (This file)
-    └── 📄 FILE_LISTING.md          (Complete file list)
+📦 ShopPerl (E-Commerce-Order-Processing-System-Perl)
+├── 📄 app.pl                       (Main application - loads routes, helpers, sessions)
+├── 📄 cpanfile                     (Dependencies)
+├── 📁 routes/                      (Route files: `shared_routes.pl`, `admin_routes.pl`, `customer_routes.pl`)
+├── 📁 lib/ECommerce/               (Perl modules)
+│   ├── 📄 Config.pm                (Configuration)
+│   ├── 📄 Database.pm              (DB initialization & sample data)
+│   ├── 📁 Models/                  (User, Product, Order, Customer)
+│   └── 📁 Controllers/             (Auth, Admin/, Customer/)
+├── 📁 templates/                   (EP templates, layouts and partials)
+├── 📁 public/                      (Static assets)
+│   ├── 📁 css/                     (styles + components)
+│   ├── 📁 js/                      (client-side scripts: toast, header, nav)
+│   └── 📁 images/                  (placeholder.svg, product images)
+├── 📁 data/                        (SQLite database `ecommerce.db`)
+└── 📁 docs/                        (Project documentation)
 ```
 
 ---

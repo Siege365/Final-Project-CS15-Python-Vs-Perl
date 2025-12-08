@@ -397,6 +397,42 @@ my $is_customer = $auth->is_customer('customer');  # Returns: 1
 
 ---
 
+### ECommerce::Controllers::Customer::Cart
+
+#### add_to_cart($c, \%params)
+
+Handles adding an item to the shopping cart. Supports both standard form POST and AJAX (XHR) requests. When the request is detected as AJAX (the client sets `X-Requested-With: XMLHttpRequest`), the controller returns JSON with this structure:
+
+```json
+{
+    "success": 1,
+    "product_name": "Example Product",
+    "cart_count": 3
+}
+```
+
+- `success`: 1 or 0
+- `product_name`: human-friendly product name (useful for toast UI)
+- `cart_count`: number of distinct products in the session cart (not summed quantity)
+
+For non-AJAX POSTs the controller sets a standard flash message and redirects the user (legacy behavior).
+
+The controller accepts typical parameters like `product_id` and `quantity`. It ensures session cart entries include `image_url` when available; the views may fall back to `public/images/placeholder.svg` if an item's `image_url` is missing.
+
+#### view_cart($c)
+
+Renders the cart page and enriches older cart items with `image_url` pulled from the products table so templates can render thumbnails.
+
+#### update_item($c, $item_id, $quantity)
+
+Updates a cart line quantity. Returns JSON for AJAX requests, otherwise uses flash + redirect.
+
+#### remove_item($c, $item_id)
+
+Removes an item from the session cart. Supports AJAX and non-AJAX flows.
+
+---
+
 ## Configuration (ECommerce::Config)
 
 ### Constants
