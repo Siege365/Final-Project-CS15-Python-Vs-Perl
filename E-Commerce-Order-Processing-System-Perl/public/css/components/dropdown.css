@@ -1,0 +1,106 @@
+/* ============================================================
+   DROPDOWN MENUS
+   ============================================================ */
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown > button {
+    background: var(--gray-200);
+    border: none;
+    font-size: 18px;
+    padding: 8px 12px;
+    cursor: pointer;
+    color: var(--gray-800);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-normal);
+}
+
+.dropdown > button:hover {
+    background: #e0e3e7;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: var(--bg-white);
+    min-width: 180px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-lg);
+    border: none;
+    z-index: 1000;
+    margin-top: 8px;
+    padding: 8px 0;
+    animation: dropdownFade 0.2s ease;
+}
+
+.dropdown-menu.show-upward {
+    top: auto;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+    display: block;
+    padding: 12px 18px;
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition-fast);
+    border: none;
+    width: 100%;
+    text-align: left;
+    background: var(--bg-white);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    margin: 0;
+    font-weight: 500;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background: linear-gradient(135deg, rgba(46, 134, 171, 0.1) 0%, rgba(26, 95, 122, 0.1) 100%);
+    color: var(--primary);
+    transform: none;
+    padding-left: 22px;
+}
+
+.dropdown-menu button[type="submit"] {
+    color: var(--danger);
+}
+
+.dropdown-menu button[type="submit"]:hover {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(199, 62, 29, 0.1) 100%);
+    color: #a71d2a;
+}
+
+.dropdown-menu form {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.dropdown-menu a:first-child,
+.dropdown-menu form:first-child button {
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+}
+
+.dropdown-menu a:last-child,
+.dropdown-menu form:last-child button {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: var(--radius-lg);
+}

@@ -1,0 +1,22 @@
+/* ============================================================
+   LAYOUT & CONTAINER
+   ============================================================ */
+
+.container {
+    max-width: 1600px;
+    width: 95%;
+    margin: 0 auto;
+    padding: 30px 40px;
+}
+
+/* Full width container option */
+.container-fluid {
+    width: 100%;
+    padding: 30px 50px;
+}
+
+/* Main content area */
+main.container {
+    padding-top: 35px;
+    padding-bottom: 50px;
+}

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="logoGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2E86AB"/>
+      <stop offset="100%" style="stop-color:#134b61"/>
+    </linearGradient>
+    <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06A77D"/>
+      <stop offset="100%" style="stop-color:#048561"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="50" cy="50" r="45" fill="url(#logoGrad1)" filter="url(#glow)"/>
+  
+  <!-- Shopping Cart Icon -->
+  <g fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Cart body -->
+    <path d="M25 35 L30 35 L38 60 L70 60 L75 40 L33 40"/>
+    <!-- Cart wheels -->
+    <circle cx="42" cy="68" r="4" fill="white"/>
+    <circle cx="64" cy="68" r="4" fill="white"/>
+    <!-- Plus sign for adding -->
+    <line x1="50" y1="28" x2="50" y2="38" stroke="url(#logoGrad2)" stroke-width="4"/>
+    <line x1="45" y1="33" x2="55" y2="33" stroke="url(#logoGrad2)" stroke-width="4"/>
+  </g>
+  
+  <!-- Decorative sparkles -->
+  <circle cx="72" cy="25" r="2" fill="#06A77D" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="78" cy="32" r="1.5" fill="#F18F01" opacity="0.8">
+    <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

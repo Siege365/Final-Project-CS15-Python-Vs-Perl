@@ -22,6 +22,10 @@ sub show_reports {
     # Get only top 10 customers
     my $top_customers = $customer_model->get_top_customers(10);
     
+    # Add total customers count
+    my $all_customers = $customer_model->get_all_customers();
+    $stats->{total_customers} = scalar @$all_customers;
+    
     $c->stash(
         stats => $stats, 
         top_customers => $top_customers

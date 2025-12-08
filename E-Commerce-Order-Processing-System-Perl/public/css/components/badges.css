@@ -1,0 +1,50 @@
+/* ============================================================
+   STATUS BADGES
+   ============================================================ */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status.pending {
+    background: linear-gradient(135deg, var(--warning), #ffc107);
+    color: white;
+    box-shadow: 0 2px 8px rgba(241, 143, 1, 0.3);
+}
+
+.status.processing {
+    background: linear-gradient(135deg, var(--info), var(--info-dark));
+    color: white;
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+}
+
+.status.shipped {
+    background: linear-gradient(135deg, #A23B72, #c44d8a);
+    color: white;
+    box-shadow: 0 2px 8px rgba(162, 59, 114, 0.3);
+}
+
+.status.delivered {
+    background: linear-gradient(135deg, var(--success), #20c997);
+    color: white;
+    box-shadow: 0 2px 8px rgba(6, 167, 125, 0.3);
+}
+
+.status.cancelled {
+    background: linear-gradient(135deg, var(--danger), var(--danger-dark));
+    color: white;
+    box-shadow: 0 2px 8px rgba(199, 62, 29, 0.3);
+}
+
+.status.refunded {
+    background: linear-gradient(135deg, #6c757d, #868e96);
+    color: white;
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+}

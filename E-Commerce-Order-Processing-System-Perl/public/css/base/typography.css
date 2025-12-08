@@ -1,0 +1,45 @@
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 25px;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Page Header with subtitle */
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.page-header h1 svg {
+    color: var(--primary);
+}
+
+.page-subtitle {
+    color: var(--gray-500);
+    font-size: 15px;
+    margin: -5px 0 0 0;
+    padding: 0;
+    line-height: 1.4;
+}

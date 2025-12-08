@@ -1,21 +1,34 @@
 % layout 'default';
 % title 'Customers';
 
-<h1>Customer Management</h1>
+<div class="page-header">
+    <h1>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Customer Management
+    </h1>
+    <p class="page-subtitle">View and manage your customer accounts.</p>
+</div>
 
-<form method="GET" action="/customers" style="display: flex; gap: 15px; margin-bottom: 20px;">
-    <input type="text" name="search" placeholder="Search customers..." value="<%= param('search') // '' %>" style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; min-width: 300px;">
-    <select name="sort" style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background-color: white; cursor: pointer;">
-        <option value="" disabled selected hidden>Sort by</option>
-        <option value="id" <%= (defined($sort) && $sort eq 'id') ? 'selected' : '' %>>ID</option>
-        <option value="recent" <%= (defined($sort) && $sort eq 'recent') ? 'selected' : '' %>>Recent User</option>
-        <option value="inactive" <%= (defined($sort) && $sort eq 'inactive') ? 'selected' : '' %>>Inactive</option>
-        <option value="all" <%= (defined($sort) && $sort eq 'all') ? 'selected' : '' %>>All</option>
-    </select>
-    <button type="submit" class="btn btn-primary" style="padding: 10px 20px; background-color: #2E86AB; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; white-space: nowrap;">Search</button>
-</form>
+<div class="search-box">
+    <form method="GET" action="/customers">
+        <input type="text" name="search" placeholder="Search customers..." value="<%= param('search') // '' %>">
+        <select name="sort">
+            <option value="" disabled selected hidden>Sort by</option>
+            <option value="id" <%= (defined($sort) && $sort eq 'id') ? 'selected' : '' %>>ID</option>
+            <option value="recent" <%= (defined($sort) && $sort eq 'recent') ? 'selected' : '' %>>Recent User</option>
+            <option value="inactive" <%= (defined($sort) && $sort eq 'inactive') ? 'selected' : '' %>>Inactive</option>
+            <option value="all" <%= (defined($sort) && $sort eq 'all') ? 'selected' : '' %>>All</option>
+        </select>
+        <button type="submit" class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Search</button>
+    </form>
+</div>
 
-<div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+<div class="card">
 % if (@$customers) {
 <table>
     <colgroup>
@@ -100,7 +113,14 @@
 <div id="deleteCustomerModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Delete Customer</h3>
+            <h3>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                Delete Customer
+            </h3>
         </div>
         <div class="modal-body">
             <p><strong>Warning:</strong> This action will permanently delete all customer data!</p>
@@ -109,8 +129,21 @@
             <p>Email: <strong id="deleteCustomerEmail"></strong></p>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeDeleteCustomerModal()">Cancel</button>
-            <button type="button" class="btn" style="background: #dc3545; color: white;" onclick="submitDeleteCustomerForm()">Delete Customer</button>
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteCustomerModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                Cancel
+            </button>
+            <button type="button" class="btn" style="background: #dc3545; color: white;" onclick="submitDeleteCustomerForm()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                Delete Customer
+            </button>
         </div>
     </div>
 </div>

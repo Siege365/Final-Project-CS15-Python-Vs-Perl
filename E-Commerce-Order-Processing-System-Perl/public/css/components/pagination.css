@@ -1,0 +1,51 @@
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 25px 0;
+    padding: 20px;
+}
+
+.pagination a,
+.pagination span {
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 14px;
+    transition: var(--transition-normal);
+}
+
+.pagination a {
+    background: var(--gray-200);
+    color: var(--gray-800);
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(46, 134, 171, 0.3);
+}
+
+.pagination .btn-primary,
+.pagination span.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(46, 134, 171, 0.3);
+}
+
+.pagination .btn-sm {
+    min-width: 35px;
+    text-align: center;
+}
+
+.pagination span:not(.btn) {
+    padding: 0 5px;
+    color: #666;
+}

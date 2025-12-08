@@ -1,12 +1,20 @@
 % layout 'default';
 % title 'Products';
 
-<h1>Products</h1>
+<div class="page-header">
+    <h1>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+            <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+        Products
+    </h1>
+    <p class="page-subtitle">Manage your product inventory and catalog.</p>
+</div>
 
 <div class="search-box">
-    <form method="GET" action="/products" style="display: flex; gap: 10px; width: 100%;">
-        % if (session('role') eq 'admin' || session('role') eq 'staff') {
-        % }
+    <form method="GET" action="/products">
         <input type="text" name="search" placeholder="Search products..." value="<%= param('search') // '' %>">
         <select name="category">
             <option value="">All Categories</option>
@@ -15,7 +23,7 @@
             % }
         </select>
         % if (session('role') eq 'admin' || session('role') eq 'staff') {
-        <select name="sort" style="min-width: 140px;">
+        <select name="sort">
             <option value="" disabled <%= !defined(stash('sort')) || stash('sort') eq '' ? 'selected' : '' %> hidden>Sort by</option>
             <option value="id" <%= (defined(stash('sort')) && stash('sort') eq 'id') ? 'selected' : '' %>>ID</option>
             <option value="in_stock" <%= (defined(stash('sort')) && stash('sort') eq 'in_stock') ? 'selected' : '' %>>In Stock</option>
@@ -23,9 +31,9 @@
             <option value="out_of_stock" <%= (defined(stash('sort')) && stash('sort') eq 'out_of_stock') ? 'selected' : '' %>>Out of Stock</option>
         </select>
         % }
-        <button type="submit" class="btn btn-primary">Search</button>
+        <button type="submit" class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Search</button>
         % if (session('role') eq 'admin' || session('role') eq 'staff') {
-        <a href="/products/add" class="btn btn-success">+ Add Product</a>
+        <a href="/products/add" class="btn btn-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Product</a>
         % }
     </form>
 </div>
@@ -34,6 +42,16 @@
 <!-- Admin/Staff View - Table Format -->
 <div class="card">
     <table>
+        <colgroup>
+            <col style="width: 5%;">
+            <col style="width: 18%;">
+            <col style="width: 12%;">
+            <col style="width: 12%;">
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col style="width: 13%;">
+            <col style="width: 10%;">
+        </colgroup>
         <thead>
             <tr>
                 <th>ID</th>
@@ -222,7 +240,14 @@ window.addEventListener('scroll', () => {
 <div id="deleteProductModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Delete Product</h3>
+            <h3>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                Delete Product
+            </h3>
         </div>
         <div class="modal-body">
             <p><strong>Warning:</strong> This action cannot be undone!</p>
@@ -231,8 +256,21 @@ window.addEventListener('scroll', () => {
             <p>SKU: <strong id="deleteProductSku"></strong></p>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeDeleteProductModal()">Cancel</button>
-            <button type="button" class="btn" style="background: #dc3545; color: white;" onclick="submitDeleteProductForm()">Delete Product</button>
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteProductModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                Cancel
+            </button>
+            <button type="button" class="btn" style="background: #dc3545; color: white;" onclick="submitDeleteProductForm()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                Delete Product
+            </button>
         </div>
     </div>
 </div>

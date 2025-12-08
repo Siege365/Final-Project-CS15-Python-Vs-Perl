@@ -21,6 +21,14 @@ sub show_dashboard {
     my $customer_id = $c->session('customer_id');
     my $customer_orders = $customer_id ? $order_model->get_orders_by_customer($customer_id) : [];
     my $shipped_orders = scalar(grep { $_->{status} eq 'shipped' } @$customer_orders);
+    my $pending_orders = scalar(grep { $_->{status} eq 'pending' || $_->{status} eq 'processing' } @$customer_orders);
+    my $delivered_orders = scalar(grep { $_->{status} eq 'delivered' } @$customer_orders);
+    
+    # Calculate total spent
+    my $total_spent = 0;
+    for my $order (@$customer_orders) {
+        $total_spent += $order->{total_amount} || 0 if $order->{status} ne 'cancelled' && $order->{status} ne 'refunded';
+    }
     
     # Pagination
     my $page = $c->param('page') // 1;
@@ -33,6 +41,9 @@ sub show_dashboard {
     my $stats = {
         total_orders => $total,
         shipped_orders => $shipped_orders,
+        pending_orders => $pending_orders,
+        delivered_orders => $delivered_orders,
+        total_spent => $total_spent,
         recent_orders => $recent_orders,
         page => $page,
         total_pages => $total_pages

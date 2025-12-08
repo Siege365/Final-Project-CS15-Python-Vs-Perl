@@ -21,6 +21,10 @@ sub show_dashboard {
     my $all_orders = $order_model->get_all_orders();
     my $active_orders = [grep { $_->{status} ne 'delivered' && $_->{status} ne 'cancelled' && $_->{status} ne 'refunded' } @$all_orders];
     
+    # Get total customers count
+    my $all_customers = $customer_model->get_all_customers();
+    my $total_customers = scalar @$all_customers;
+    
     # Get only 5 most recent orders for dashboard
     my $recent = $order_model->get_recent_orders(5);
     
@@ -28,6 +32,7 @@ sub show_dashboard {
         total_products => scalar @{$product_model->get_all_products()},
         low_stock => scalar @{$product_model->get_low_stock_products()},
         total_orders => scalar @$active_orders,
+        total_customers => $total_customers,
         recent_orders => $recent
     };
     

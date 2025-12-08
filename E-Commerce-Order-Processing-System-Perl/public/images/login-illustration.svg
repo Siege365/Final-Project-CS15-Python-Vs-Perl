@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2E86AB;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#134b61;stop-opacity:0.1"/>
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06A77D"/>
+      <stop offset="100%" style="stop-color:#048561"/>
+    </linearGradient>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2E86AB"/>
+      <stop offset="100%" style="stop-color:#1a5f7a"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Decorative circles -->
+  <circle cx="320" cy="60" r="40" fill="url(#grad1)">
+    <animate attributeName="r" values="40;45;40" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="80" cy="220" r="30" fill="url(#grad1)">
+    <animate attributeName="r" values="30;35;30" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="350" cy="200" r="20" fill="url(#grad1)">
+    <animate attributeName="r" values="20;25;20" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Main device - Laptop -->
+  <rect x="100" y="100" width="200" height="130" rx="8" fill="#2d3436" stroke="#1a1a1a" stroke-width="2"/>
+  <rect x="110" y="108" width="180" height="105" rx="4" fill="url(#grad3)"/>
+  
+  <!-- Screen content - Shopping interface -->
+  <rect x="120" y="118" width="160" height="85" rx="2" fill="white" opacity="0.95"/>
+  
+  <!-- Product grid on screen -->
+  <rect x="128" y="126" width="45" height="35" rx="3" fill="#f0f2f5"/>
+  <rect x="178" y="126" width="45" height="35" rx="3" fill="#f0f2f5"/>
+  <rect x="228" y="126" width="45" height="35" rx="3" fill="#f0f2f5"/>
+  
+  <!-- Cart icon on screen -->
+  <circle cx="260" cy="190" r="10" fill="url(#grad2)"/>
+  <text x="260" y="194" text-anchor="middle" fill="white" font-size="10" font-weight="bold">3</text>
+  
+  <!-- Laptop base -->
+  <path d="M80 230 L320 230 L330 245 L70 245 Z" fill="#2d3436"/>
+  <ellipse cx="200" cy="238" rx="30" ry="3" fill="#1a1a1a" opacity="0.3"/>
+  
+  <!-- Floating elements -->
+  <g class="floating-icons">
+    <!-- Shopping bag -->
+    <g transform="translate(50, 80)">
+      <rect x="0" y="10" width="30" height="35" rx="3" fill="url(#grad2)"/>
+      <path d="M5 10 Q15 -5 25 10" fill="none" stroke="url(#grad2)" stroke-width="3"/>
+      <animate attributeName="transform" values="translate(50, 80);translate(50, 75);translate(50, 80)" dur="3s" repeatCount="indefinite"/>
+    </g>
+    
+    <!-- Credit card -->
+    <g transform="translate(300, 100)">
+      <rect x="0" y="0" width="50" height="35" rx="4" fill="#F18F01"/>
+      <rect x="5" y="10" width="25" height="4" rx="2" fill="white" opacity="0.5"/>
+      <rect x="5" y="18" width="15" height="4" rx="2" fill="white" opacity="0.5"/>
+      <animate attributeName="transform" values="translate(300, 100);translate(300, 95);translate(300, 100)" dur="2.5s" repeatCount="indefinite"/>
+    </g>
+    
+    <!-- Star/sparkle -->
+    <g transform="translate(60, 180)">
+      <polygon points="10,0 12,7 20,7 14,12 16,20 10,15 4,20 6,12 0,7 8,7" fill="#F18F01">
+        <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+      </polygon>
+    </g>
+  </g>
+  
+  <!-- Decorative dots -->
+  <circle cx="150" cy="60" r="3" fill="#2E86AB" opacity="0.6"/>
+  <circle cx="165" cy="55" r="2" fill="#06A77D" opacity="0.6"/>
+  <circle cx="180" cy="62" r="2.5" fill="#F18F01" opacity="0.6"/>
+</svg>

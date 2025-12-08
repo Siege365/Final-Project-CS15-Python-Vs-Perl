@@ -1,12 +1,20 @@
 % layout 'default';
 % title 'Products';
 
-<h1>Products</h1>
+<div class="page-header">
+    <h1>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+            <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+        Products
+    </h1>
+    <p class="page-subtitle">Browse our product catalog.</p>
+</div>
 
 <div class="search-box">
-    <form method="GET" action="/products" style="display: flex; gap: 10px; width: 100%;">
-        % if (session('role') eq 'admin' || session('role') eq 'staff') {
-        % }
+    <form method="GET" action="/products">
         <input type="text" name="search" placeholder="Search products..." value="<%= param('search') // '' %>">
         <select name="category">
             <option value="">All Categories</option>
@@ -15,7 +23,7 @@
             % }
         </select>
         % if (session('role') eq 'admin' || session('role') eq 'staff') {
-        <select name="sort" style="min-width: 140px;">
+        <select name="sort">
             <option value="" disabled <%= !defined(stash('sort')) || stash('sort') eq '' ? 'selected' : '' %> hidden>Sort by</option>
             <option value="id" <%= (defined(stash('sort')) && stash('sort') eq 'id') ? 'selected' : '' %>>ID</option>
             <option value="in_stock" <%= (defined(stash('sort')) && stash('sort') eq 'in_stock') ? 'selected' : '' %>>In Stock</option>
@@ -23,9 +31,9 @@
             <option value="out_of_stock" <%= (defined(stash('sort')) && stash('sort') eq 'out_of_stock') ? 'selected' : '' %>>Out of Stock</option>
         </select>
         % }
-        <button type="submit" class="btn btn-primary">Search</button>
+        <button type="submit" class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Search</button>
         % if (session('role') eq 'admin' || session('role') eq 'staff') {
-        <a href="/products/add" class="btn btn-success">+ Add Product</a>
+        <a href="/products/add" class="btn btn-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Product</a>
         % }
     </form>
 </div>
@@ -34,6 +42,16 @@
 <!-- Admin/Staff View - Table Format -->
 <div class="card">
     <table>
+        <colgroup>
+            <col style="width: 5%;">
+            <col style="width: 18%;">
+            <col style="width: 12%;">
+            <col style="width: 12%;">
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col style="width: 13%;">
+            <col style="width: 10%;">
+        </colgroup>
         <thead>
             <tr>
                 <th>ID</th>
@@ -111,24 +129,48 @@
 <div class="product-grid" id="product-grid">
     % for my $product (@$products) {
     <div class="product-card">
-        <div class="content">
-            <h3><%= $product->{name} %></h3>
-            <div class="category"><%= $product->{category} %></div>
-            <div class="price">$<%= sprintf("%.2f", $product->{price}) %></div>
-            <div class="stock <%= $product->{stock_quantity} <= 0 ? 'out' : $product->{stock_quantity} <= $product->{reorder_level} ? 'low' : '' %>">
-                Stock: <%= $product->{stock_quantity} %>
-            </div>
-            <p><%= substr($product->{description} // '', 0, 100) %>...</p>
-            
-            % if ($product->{stock_quantity} > 0) {
-            <form method="POST" action="/cart/add">
-                <input type="hidden" name="product_id" value="<%= $product->{id} %>">
-                <input type="number" name="quantity" value="1" min="1" max="<%= $product->{stock_quantity} %>" style="width: 60px;">
-                <button type="submit" class="btn btn-success">Add to Cart</button>
-            </form>
+        <div class="product-image">
+            % if ($product->{image_url}) {
+            <img src="<%= $product->{image_url} %>" alt="<%= $product->{name} %>">
             % } else {
-            <button class="btn btn-secondary" disabled>Out of Stock</button>
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop" alt="<%= $product->{name} %>">
             % }
+            % if ($product->{stock_quantity} <= 0) {
+            <span class="stock-badge out-of-stock">Out of Stock</span>
+            % } elsif ($product->{stock_quantity} <= $product->{reorder_level}) {
+            <span class="stock-badge low-stock">Low Stock</span>
+            % } else {
+            <span class="stock-badge in-stock">In Stock</span>
+            % }
+        </div>
+        <div class="content">
+            <div class="category"><%= $product->{category} %></div>
+            <h3><%= $product->{name} %></h3>
+            <p class="description"><%= $product->{description} // 'No description available' %></p>
+            <div class="price-stock">
+                <div class="price">$<%= sprintf("%.2f", $product->{price}) %></div>
+                <div class="stock <%= $product->{stock_quantity} <= 0 ? 'out' : $product->{stock_quantity} <= $product->{reorder_level} ? 'low' : '' %>">
+                    <%= $product->{stock_quantity} %> left
+                </div>
+            </div>
+            <div class="card-actions">
+                % if ($product->{stock_quantity} > 0) {
+                <form method="POST" action="/cart/add" class="ajax-add-cart" style="display: flex; gap: 10px; width: 100%;">
+                    <input type="hidden" name="product_id" value="<%= $product->{id} %>">
+                    <input type="number" name="quantity" value="1" min="1" max="<%= $product->{stock_quantity} %>">
+                    <button type="submit" class="btn-add-cart">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        Add to Cart
+                    </button>
+                </form>
+                % } else {
+                <button class="btn-out-of-stock" disabled>Out of Stock</button>
+                % }
+            </div>
         </div>
     </div>
     % }
@@ -166,24 +208,45 @@ function loadMoreProducts() {
                 const stockClass = product.stock_quantity <= 0 ? 'out' : 
                                   product.stock_quantity <= product.reorder_level ? 'low' : '';
                 
+                const stockBadgeClass = product.stock_quantity <= 0 ? 'out-of-stock' : 
+                                       product.stock_quantity <= product.reorder_level ? 'low-stock' : 'in-stock';
+                
+                const stockBadgeText = product.stock_quantity <= 0 ? 'Out of Stock' : 
+                                      product.stock_quantity <= product.reorder_level ? 'Low Stock' : 'In Stock';
+                
+                const imageUrl = product.image_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop';
+                
                 const addToCartForm = product.stock_quantity > 0 ? 
-                    `<form method="POST" action="/cart/add">
+                    `<form method="POST" action="/cart/add" class="ajax-add-cart" style="display: flex; gap: 10px; width: 100%;">
                         <input type="hidden" name="product_id" value="${product.id}">
-                        <input type="number" name="quantity" value="1" min="1" max="${product.stock_quantity}" style="width: 60px;">
-                        <button type="submit" class="btn btn-success">Add to Cart</button>
+                        <input type="number" name="quantity" value="1" min="1" max="${product.stock_quantity}">
+                        <button type="submit" class="btn-add-cart">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            Add to Cart
+                        </button>
                     </form>` :
-                    `<button class="btn btn-secondary" disabled>Out of Stock</button>`;
+                    `<button class="btn-out-of-stock" disabled>Out of Stock</button>`;
                 
                 card.innerHTML = `
+                    <div class="product-image">
+                        <img src="${imageUrl}" alt="${product.name}">
+                        <span class="stock-badge ${stockBadgeClass}">${stockBadgeText}</span>
+                    </div>
                     <div class="content">
-                        <h3>${product.name}</h3>
                         <div class="category">${product.category}</div>
-                        <div class="price">$${parseFloat(product.price).toFixed(2)}</div>
-                        <div class="stock ${stockClass}">
-                            Stock: ${product.stock_quantity}
+                        <h3>${product.name}</h3>
+                        <p class="description">${product.description || 'No description available'}</p>
+                        <div class="price-stock">
+                            <div class="price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <div class="stock ${stockClass}">${product.stock_quantity} left</div>
                         </div>
-                        <p>${(product.description || '').substring(0, 100)}...</p>
-                        ${addToCartForm}
+                        <div class="card-actions">
+                            ${addToCartForm}
+                        </div>
                     </div>
                 `;
                 
@@ -210,6 +273,101 @@ window.addEventListener('scroll', () => {
     if (scrollTop + clientHeight >= scrollHeight - 200) {
         loadMoreProducts();
     }
+});
+</script>
+
+<!-- Add-to-cart toast (simple, auto-dismiss) -->
+<div id="addToCartToast" class="add-to-cart-toast" aria-live="polite" aria-atomic="true" style="display:none;">
+    <div class="toast-inner">
+        <strong id="toastProductName">Item</strong>
+        <span id="toastMessage"> added to cart</span>
+        <span class="toast-count" id="toastCartCount" style="margin-left:8px; opacity:0.9;">(0)</span>
+    </div>
+</div>
+
+<script>
+// Intercept add-to-cart forms and submit via AJAX to show a brief toast notification
+document.addEventListener('submit', function(e) {
+    const form = e.target;
+    if (!form.classList || !form.classList.contains('ajax-add-cart')) return;
+    e.preventDefault();
+
+    const url = form.action;
+    const data = new FormData(form);
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: data
+    }).then(res => res.json())
+    .then(json => {
+        if (json && json.success) {
+            // update cart badge if present
+            const badge = document.querySelector('.cart-badge');
+            if (badge && typeof json.cart_count !== 'undefined') {
+                badge.textContent = json.cart_count;
+            }
+
+            // set toast content
+            const nameEl = document.getElementById('toastProductName');
+            const countEl = document.getElementById('toastCartCount');
+            if (nameEl) nameEl.textContent = json.product_name || 'Item';
+            if (countEl) countEl.textContent = '(' + (json.cart_count || 0) + ')';
+
+            // show toast and position it below the header
+            const toast = document.getElementById('addToCartToast');
+            function positionToastBelowHeader() {
+                if (!toast) return;
+                const header = document.querySelector('header');
+                let topOffset = 12; // default spacing
+                if (header) {
+                    const rect = header.getBoundingClientRect();
+                    // rect.bottom is distance from viewport top to header bottom
+                    topOffset = Math.max(12, Math.ceil(rect.bottom) + 12);
+                }
+                toast.style.top = topOffset + 'px';
+            }
+
+            if (toast) {
+                positionToastBelowHeader();
+                toast.style.display = 'block';
+
+                // trigger progress bar animation on inner element
+                const inner = toast.querySelector('.toast-inner');
+                if (inner) {
+                    inner.classList.remove('playing');
+                    // force reflow to restart CSS animation
+                    void inner.offsetWidth;
+                    inner.classList.add('playing');
+                }
+
+                // ensure the show class triggers transition
+                requestAnimationFrame(() => toast.classList.add('show'));
+
+                // reposition while visible (in case header becomes sticky/resizes)
+                function onScrollOrResize() { if (toast.classList.contains('show')) positionToastBelowHeader(); }
+                window.addEventListener('scroll', onScrollOrResize);
+                window.addEventListener('resize', onScrollOrResize);
+
+                // auto-hide after 2.5 seconds
+                clearTimeout(window.__addToCartToastTimeout);
+                window.__addToCartToastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                    if (inner) inner.classList.remove('playing');
+                    setTimeout(() => { toast.style.display = 'none';
+                        window.removeEventListener('scroll', onScrollOrResize);
+                        window.removeEventListener('resize', onScrollOrResize);
+                    }, 250);
+                }, 2500);
+            }
+        } else {
+            // fallback: reload page to show flash
+            window.location.reload();
+        }
+    }).catch(err => {
+        console.error('Add to cart failed', err);
+        window.location.reload();
+    });
 });
 </script>
 % }

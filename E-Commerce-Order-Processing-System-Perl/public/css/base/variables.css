@@ -1,0 +1,55 @@
+/* ============================================================
+   CSS VARIABLES (COLOR PALETTE & DESIGN TOKENS)
+   ============================================================ */
+
+:root {
+    /* Primary Colors */
+    --primary: #2E86AB;
+    --primary-dark: #1a5f7a;
+    --primary-darker: #134b61;
+    
+    /* Status Colors */
+    --success: #06A77D;
+    --success-dark: #048561;
+    --warning: #F18F01;
+    --warning-dark: #d67d01;
+    --danger: #dc3545;
+    --danger-dark: #C73E1D;
+    --info: #4A90E2;
+    --info-dark: #5aa3f0;
+    
+    /* Neutral Colors */
+    --gray-100: #f8f9fa;
+    --gray-200: #f0f2f5;
+    --gray-300: #e0e0e0;
+    --gray-400: #b0b0b0;
+    --gray-500: #636e72;
+    --gray-600: #5a6268;
+    --gray-700: #495057;
+    --gray-800: #2d3436;
+    --gray-900: #1a1a1a;
+    
+    /* Background Colors */
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    --bg-white: #ffffff;
+    --bg-light: #fafafa;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+    
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-full: 25px;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-smooth: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}

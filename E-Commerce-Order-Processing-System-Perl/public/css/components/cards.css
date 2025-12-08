@@ -1,0 +1,246 @@
+/* ============================================================
+   CARD COMPONENTS
+   ============================================================ */
+
+.card {
+    background: var(--bg-white);
+    border-radius: var(--radius-xl);
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: box-shadow var(--transition-normal);
+    width: 100%;
+}
+
+/* Card with table - keep padding for white space around table */
+.card:has(table) {
+    padding: 25px;
+}
+
+/* When card has table, adjust heading margins */
+.card:has(table) > h2,
+.card:has(table) > h3 {
+    margin-bottom: 20px;
+}
+
+.card:has(table) > .card-header {
+    margin-bottom: 15px;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.card h2 {
+    color: var(--primary);
+    margin-bottom: 25px;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card h2 svg {
+    flex-shrink: 0;
+}
+
+.card h3 {
+    color: var(--gray-800);
+    margin-bottom: 18px;
+}
+
+/* Card Header - for cards with title and action buttons */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0;
+}
+
+.card-header h2 svg {
+    color: var(--primary);
+}
+
+
+/* ============================================================
+   METRIC CARDS (DASHBOARD)
+   ============================================================ */
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    margin-bottom: 35px;
+}
+
+.metric-card {
+    background: var(--bg-white);
+    border-radius: var(--radius-xl);
+    padding: 28px 30px;
+    box-shadow: var(--shadow-md);
+    border-left: 5px solid var(--primary);
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    min-height: 140px;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, rgba(46, 134, 171, 0.1) 0%, transparent 100%);
+    border-radius: 0 0 0 100%;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.metric-card h3 {
+    color: var(--gray-500);
+    font-size: 13px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.metric-card .value {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -1px;
+}
+
+/* Metric Card - Success Variant */
+.metric-card.success {
+    border-left-color: var(--success);
+}
+
+.metric-card.success::before {
+    background: linear-gradient(135deg, rgba(6, 167, 125, 0.1) 0%, transparent 100%);
+}
+
+.metric-card.success .value {
+    color: var(--success);
+}
+
+/* Metric Card - Warning Variant */
+.metric-card.warning {
+    border-left-color: var(--warning);
+}
+
+.metric-card.warning::before {
+    background: linear-gradient(135deg, rgba(241, 143, 1, 0.1) 0%, transparent 100%);
+}
+
+.metric-card.warning .value {
+    color: var(--warning);
+}
+
+/* Metric Card - Danger Variant */
+.metric-card.danger {
+    border-left-color: var(--danger-dark);
+}
+
+.metric-card.danger::before {
+    background: linear-gradient(135deg, rgba(199, 62, 29, 0.1) 0%, transparent 100%);
+}
+
+.metric-card.danger .value {
+    color: var(--danger-dark);
+}
+
+/* Metric Card - Info Variant */
+.metric-card.info {
+    border-left-color: var(--info);
+}
+
+.metric-card.info::before {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, transparent 100%);
+}
+
+.metric-card.info .value {
+    color: var(--info);
+}
+
+
+/* ============================================================
+   METRIC CARD ICONS
+   ============================================================ */
+
+.metric-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    box-shadow: 0 4px 15px rgba(46, 134, 171, 0.3);
+    transition: var(--transition-normal);
+}
+
+.metric-card-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke: white;
+    stroke-width: 2;
+    fill: none;
+}
+
+.metric-card:hover .metric-card-icon {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 6px 20px rgba(46, 134, 171, 0.4);
+}
+
+/* Icon variants */
+.metric-card.success .metric-card-icon {
+    background: linear-gradient(135deg, var(--success) 0%, #048a63 100%);
+    box-shadow: 0 4px 15px rgba(6, 167, 125, 0.3);
+}
+
+.metric-card:hover.success .metric-card-icon {
+    box-shadow: 0 6px 20px rgba(6, 167, 125, 0.4);
+}
+
+.metric-card.warning .metric-card-icon {
+    background: linear-gradient(135deg, var(--warning) 0%, #c97500 100%);
+    box-shadow: 0 4px 15px rgba(241, 143, 1, 0.3);
+}
+
+.metric-card:hover.warning .metric-card-icon {
+    box-shadow: 0 6px 20px rgba(241, 143, 1, 0.4);
+}
+
+.metric-card.danger .metric-card-icon {
+    background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+    box-shadow: 0 4px 15px rgba(199, 62, 29, 0.3);
+}
+
+.metric-card:hover.danger .metric-card-icon {
+    box-shadow: 0 6px 20px rgba(199, 62, 29, 0.4);
+}
+
+.metric-card.info .metric-card-icon {
+    background: linear-gradient(135deg, var(--info) 0%, #3a7bd5 100%);
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.metric-card:hover.info .metric-card-icon {
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+}

@@ -66,6 +66,14 @@ helper get_cart => sub {
     return $c->session('cart') // [];
 };
 
+# Helper to get total cart items count (number of distinct products)
+helper get_cart_count => sub {
+    my $c = shift;
+    my $cart = $c->session('cart') // [];
+    # Count distinct product entries in the cart (one per product)
+    return scalar @$cart;
+};
+
 # Helper to add to cart
 helper add_to_cart => sub {
     my ($c, $item) = @_;

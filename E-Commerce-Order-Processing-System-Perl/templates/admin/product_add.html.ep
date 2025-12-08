@@ -2,7 +2,14 @@
 % title 'Add Product';
 
 <div class="page-header">
-    <h2>Add New Product</h2>
+    <h1>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add New Product
+    </h1>
+    <p class="page-subtitle">Create a new product for your catalog.</p>
 </div>
 
 <div class="card">

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="emptyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2E86AB"/>
+      <stop offset="100%" style="stop-color:#1a5276"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F6AE2D"/>
+      <stop offset="100%" style="stop-color:#E8930C"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Cart body -->
+  <g transform="translate(100, 50)">
+    <!-- Cart basket -->
+    <path d="M20 80 L40 180 L160 180 L180 80 Z" fill="url(#emptyGrad)" opacity="0.15"/>
+    <path d="M20 80 L40 180 L160 180 L180 80" fill="none" stroke="url(#emptyGrad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Cart handle -->
+    <path d="M0 80 L20 80 M180 80 L200 80 L220 40" fill="none" stroke="url(#emptyGrad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Wheels -->
+    <circle cx="60" cy="195" r="15" fill="url(#emptyGrad)"/>
+    <circle cx="60" cy="195" r="6" fill="white"/>
+    <circle cx="140" cy="195" r="15" fill="url(#emptyGrad)"/>
+    <circle cx="140" cy="195" r="6" fill="white"/>
+    
+    <!-- Sad face inside cart -->
+    <g transform="translate(100, 130)" opacity="0.4">
+      <!-- Eyes -->
+      <circle cx="-30" cy="-20" r="8" fill="url(#emptyGrad)"/>
+      <circle cx="30" cy="-20" r="8" fill="url(#emptyGrad)"/>
+      <!-- Sad mouth -->
+      <path d="M-25 20 Q0 0 25 20" fill="none" stroke="url(#emptyGrad)" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    
+    <!-- Dotted line showing emptiness -->
+    <line x1="50" y1="110" x2="150" y2="110" stroke="url(#accentGrad)" stroke-width="3" stroke-dasharray="8,8" opacity="0.5">
+      <animate attributeName="stroke-dashoffset" from="0" to="16" dur="1s" repeatCount="indefinite"/>
+    </line>
+  </g>
+  
+  <!-- Question marks floating -->
+  <g fill="url(#accentGrad)" font-family="Arial, sans-serif" font-weight="bold" opacity="0.3">
+    <text x="80" y="60" font-size="30">?</text>
+    <text x="320" y="100" font-size="24">?</text>
+    <text x="50" y="250" font-size="20">?</text>
+  </g>
+  
+  <!-- Decorative dots -->
+  <circle cx="340" cy="200" r="5" fill="url(#accentGrad)" opacity="0.4"/>
+  <circle cx="355" cy="180" r="3" fill="url(#accentGrad)" opacity="0.3"/>
+  <circle cx="60" cy="70" r="4" fill="url(#emptyGrad)" opacity="0.3"/>
+</svg>

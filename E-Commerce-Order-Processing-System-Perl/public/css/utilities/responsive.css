@@ -1,0 +1,103 @@
+/* ============================================================
+   RESPONSIVE DESIGN
+   ============================================================ */
+
+/* Large Desktop */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1600px;
+    }
+    
+    .metrics {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Desktop */
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .metrics {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Small Desktop / Tablet Landscape */
+@media (max-width: 1199px) {
+    .container {
+        width: 95%;
+        padding: 25px 30px;
+    }
+    
+    .metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .search-box form {
+        flex-wrap: wrap;
+    }
+    
+    .search-box input[type="text"] {
+        min-width: 100%;
+    }
+    
+    .search-box select {
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding: 20px;
+    }
+    
+    .metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    nav ul {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .cart-item-quantity {
+        margin: 10px 0;
+    }
+    
+    .cart-item-total {
+        text-align: left;
+    }
+    
+    .search-box form {
+        flex-direction: column;
+    }
+    
+    .search-box input,
+    .search-box select,
+    .search-box .btn {
+        width: 100%;
+    }
+}

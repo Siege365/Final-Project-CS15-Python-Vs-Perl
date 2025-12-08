@@ -1,0 +1,77 @@
+/* ============================================================
+   TABLES - Clean, aligned table styling
+   ============================================================ */
+
+/* Base table - simple and consistent */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: var(--bg-white);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+/* Table header */
+thead {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+}
+
+th {
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+/* Table body cells */
+td {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 14px;
+    color: var(--gray-700);
+}
+
+/* Remove border from last row */
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Row hover effect */
+tbody tr:hover {
+    background-color: rgba(46, 134, 171, 0.04);
+}
+
+/* Cell link styling */
+td a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+td a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    th, td {
+        padding: 12px 14px;
+    }
+    
+    th {
+        font-size: 11px;
+    }
+    
+    td {
+        font-size: 13px;
+    }
+}

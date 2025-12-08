@@ -14,6 +14,15 @@ sub view_cart {
     my ($self, $c) = @_;
     
     my $cart = $c->get_cart();
+
+    # Ensure each cart item has an image_url (for older sessions/items without it)
+    my $product_model = ECommerce::Models::Product->new();
+    foreach my $item (@$cart) {
+        unless (exists $item->{image_url} && $item->{image_url}) {
+            my $prod = $product_model->get_product_by_id($item->{product_id});
+            $item->{image_url} = $prod->{image_url} // '' if $prod;
+        }
+    }
     
     # Fetch customer's address
     my $customer_id = $c->session('customer_id');
@@ -55,11 +64,24 @@ sub add_to_cart {
                 product_id => $product_id,
                 name => $product->{name},
                 price => $product->{price},
-                quantity => $quantity
+                quantity => $quantity,
+                image_url => $product->{image_url} // ''
             };
         }
         
         $c->session(cart => $cart);
+        # compute cart item count (number of distinct products)
+        my %seen;
+        foreach my $it (@$cart) { $seen{ $it->{product_id} // '' } = 1 }
+        my $cart_count = scalar keys %seen;
+
+        # If AJAX request, return JSON response for client-side modal and do not set a flash
+        my $is_ajax = ($c->req->headers->header('X-Requested-With') && $c->req->headers->header('X-Requested-With') eq 'XMLHttpRequest');
+        if ($is_ajax) {
+            return $c->render(json => { success => 1, product_name => $product->{name}, cart_count => $cart_count });
+        }
+
+        # Non-AJAX flow: set flash so the server-rendered banner shows after redirect
         $c->flash(success => 'Product added to cart!');
     }
     

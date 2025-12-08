@@ -168,6 +168,9 @@ sub setup_shared_routes {
             $products = $product_model->get_all_products();
         }
         
+        # Sort by id to match initial page load order
+        $products = [sort { $a->{id} <=> $b->{id} } @$products];
+        
         # Pagination
         my $total = scalar @$products;
         my $offset = ($page - 1) * $per_page;

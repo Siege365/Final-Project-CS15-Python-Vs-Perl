@@ -1,0 +1,285 @@
+/* ============================================================
+   HEADER & NAVIGATION - CREATIVE VERSION
+   ============================================================ */
+
+header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 50%, var(--primary-darker) 100%);
+    color: white;
+    /* Reduced vertical padding to decrease header height */
+    padding: 10px 0;
+    box-shadow: 0 4px 20px rgba(46, 134, 171, 0.28);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative header pattern */
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='20' cy='20' r='1.5'/%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+.header-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Combined header content when nav is inside header: keep items vertically centered */
+.header-content.combined {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-logo {
+    /* slightly smaller logo to save vertical space */
+    width: 44px;
+    height: 44px;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.14));
+    animation: logoFloat 3s ease-in-out infinite;
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.header-logo:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-text h1 {
+    margin: 0;
+    /* slightly smaller heading to fit the tighter header */
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    line-height: 1.05;
+    background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.85) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand-text .tagline {
+    font-size: 10px;
+    opacity: 0.85;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Navigation */
+nav {
+    /* make nav transparent to visually combine with header */
+    background: transparent;
+    padding: 0;
+    position: relative;
+    box-shadow: none;
+}
+
+nav::before {
+    /* remove decorative divider so nav blends into header */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: transparent;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+nav li {
+    position: relative;
+}
+
+nav li.nav-right {
+    margin-left: auto;
+}
+
+nav a {
+    color: rgba(255, 255, 255, 0.96);
+    text-decoration: none;
+    /* tightened padding to reduce nav height */
+    padding: 8px 12px;
+    border-radius: 0;
+    transition: all 0.25s ease;
+    font-weight: 500;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+nav a svg {
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--success), #4ecdc4);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    border-radius: 3px 3px 0 0;
+}
+
+nav a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+nav a:hover svg {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+nav a:hover::after {
+    width: 80%;
+}
+
+/* Cart Badge */
+.cart-link {
+    position: relative;
+    padding-right: 28px !important;
+}
+
+.cart-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 12px;
+    min-width: 18px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(6, 167, 125, 0.28);
+    transition: transform 0.18s ease;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Sticky header state applied via JS when scrolling */
+header.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: saturate(120%) blur(4px);
+}
+
+header.sticky .header-logo {
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
+}
+
+/* Smooth transitions for header changes */
+header, nav, .header-content {
+    transition: all 220ms ease;
+}
+
+/* Hamburger (mobile) */
+.hamburger {
+    display: none;
+    width: 40px;
+    height: 34px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+.hamburger span {
+    display: block;
+    height: 3px;
+    width: 22px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 2px;
+    transition: transform 180ms ease, opacity 180ms ease;
+}
+
+/* Mobile menu styles */
+.site-nav {
+    display: flex;
+}
+
+@media (max-width: 880px) {
+    .hamburger { display: flex; }
+    .site-nav { display: none; position: absolute; left: 0; right: 0; top: 100%; background: rgba(9, 45, 56, 0.95); padding: 10px 0; box-shadow: 0 6px 20px rgba(0,0,0,0.18); border-radius: 0 0 8px 8px; z-index: 9998; }
+    .site-nav.open { display: block; }
+    .site-nav ul { flex-direction: column; gap: 0; padding: 6px 12px; }
+    .site-nav ul li { padding: 6px 0; }
+    .site-nav ul li a { padding: 10px 14px; display: block; }
+}
+
+/* Logout Link */
+.logout-link {
+    opacity: 0.85;
+    font-size: 13px;
+}
+
+.logout-link:hover {
+    opacity: 1;
+    background: rgba(220, 53, 69, 0.2) !important;
+}
+
+.logout-link:hover::after {
+    background: var(--danger) !important;
+}
+
+/* Enforce nav transparency to avoid any visible nav band */
+.site-nav,
+nav,
+nav ul,
+nav li {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Ensure nav links don't render as filled blocks by default */
+nav a {
+    background: transparent !important;
+    border-radius: 0 !important;
+}
+
