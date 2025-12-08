@@ -215,13 +215,17 @@ E-Commerce-Order-Processing-System-Perl/
 2. ✅ Database layer implementation
 3. ✅ Authentication and user management
 4. ✅ Product management module
+
 # 🎉 ShopPerl – E‑Commerce with a Perl‑sonality
+
 ## ✅ PROJECT COMPLETE!
+
 **Status**: Production Ready  
 **Version**: 1.0.0  
 **Date**: December 8, 2025  
 **Framework**: Mojolicious (Perl)  
 **Running At**: http://localhost:3000
+
 ---
 
 ## 🚦 Quick Start
@@ -287,19 +291,19 @@ Notes:
 ✅ Inventory management  
 ✅ Customer management  
 ✅ Business analytics  
-✅ Responsive design  
+✅ Responsive design
 
 ### Notable UX details implemented
 
 - AJAX Add-to-Cart with in-page toast (non-blocking confirmation)
 - Cart badge counts distinct products (not summed quantities)
 - Cart templates render product thumbnails when `image_url` is present; otherwise `public/images/placeholder.svg` is used
-✅ **NO GRADIENTS** (solid colors only!)  
-✅ Comprehensive documentation  
-✅ Sample data included  
-✅ Production-ready code  
-✅ Well-organized structure  
-✅ Running successfully!
+  ✅ **NO GRADIENTS** (solid colors only!)  
+  ✅ Comprehensive documentation  
+  ✅ Sample data included  
+  ✅ Production-ready code  
+  ✅ Well-organized structure  
+  ✅ Running successfully!
 
 ---
 
@@ -393,5 +397,3 @@ Your **E-Commerce Order Processing System** built with **Perl & Mojolicious** is
 **Framework**: Mojolicious  
 **Date**: December 2, 2025  
 **Version**: 1.0.0
-
-

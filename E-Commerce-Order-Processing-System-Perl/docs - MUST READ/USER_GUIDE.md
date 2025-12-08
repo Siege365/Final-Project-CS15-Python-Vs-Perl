@@ -55,9 +55,10 @@ Or filter by category:
 2. Set quantity (if needed)
 3. Click "Add to Cart"
 4. View cart counter in navigation
-Note: The product listing uses an AJAX Add‑to‑Cart flow. When you click **Add to Cart** the page will not reload — a small, non-blocking toast appears near the header confirming the product was added. The cart badge in the navigation shows the number of distinct products in your cart (one per product), not the sum of quantities.
+   Note: The product listing uses an AJAX Add‑to‑Cart flow. When you click **Add to Cart** the page will not reload — a small, non-blocking toast appears near the header confirming the product was added. The cart badge in the navigation shows the number of distinct products in your cart (one per product), not the sum of quantities.
 
 If your browser has JavaScript disabled the server falls back to the traditional POST + flash message flow.
+
 ### Shopping Cart
 
 1. Click "Cart" in navigation

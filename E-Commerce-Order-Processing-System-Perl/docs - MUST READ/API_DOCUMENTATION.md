@@ -405,9 +405,9 @@ Handles adding an item to the shopping cart. Supports both standard form POST an
 
 ```json
 {
-    "success": 1,
-    "product_name": "Example Product",
-    "cart_count": 3
+  "success": 1,
+  "product_name": "Example Product",
+  "cart_count": 3
 }
 ```
 

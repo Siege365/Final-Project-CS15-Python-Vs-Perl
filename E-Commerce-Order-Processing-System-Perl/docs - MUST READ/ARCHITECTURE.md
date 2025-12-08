@@ -53,6 +53,7 @@ Note: Controllers are organized under `lib/ECommerce/Controllers/` and may inclu
 - Form handling
 
 Notes:
+
 - The main layout is `templates/layouts/default.html.ep`. It contains the header/navigation and includes client-side scripts and styles.
 - Some templates include lightweight UI components such as an in-page Add‑to‑Cart toast. Product listing templates add `class="ajax-add-cart"` to forms so client-side JS can intercept submission and call the controller via fetch/XHR.
 
@@ -189,11 +190,11 @@ CREATE TABLE inventory_transactions (
    - Session stores cart items
    - Quantity validated against stock
 
-    Implementation notes:
+   Implementation notes:
 
-    - Add-to-Cart is implemented to support both traditional POSTs and AJAX: when the client submits with `X-Requested-With: XMLHttpRequest` the Cart controller returns JSON (for example `{ success => 1, product_name => 'Name', cart_count => 3 }`) and does not set the server-side flash; non-AJAX submissions fall back to setting flash and redirecting.
+   - Add-to-Cart is implemented to support both traditional POSTs and AJAX: when the client submits with `X-Requested-With: XMLHttpRequest` the Cart controller returns JSON (for example `{ success => 1, product_name => 'Name', cart_count => 3 }`) and does not set the server-side flash; non-AJAX submissions fall back to setting flash and redirecting.
 
-    - The session cart is stored as an arrayref of item hashrefs. Each item may include `product_id`, `product_name`, `quantity`, `unit_price`, and `image_url`. Older cart entries are enriched with `image_url` when the cart is viewed so templates can render images with a `public/images/placeholder.svg` fallback.
+   - The session cart is stored as an arrayref of item hashrefs. Each item may include `product_id`, `product_name`, `quantity`, `unit_price`, and `image_url`. Older cart entries are enriched with `image_url` when the cart is viewed so templates can render images with a `public/images/placeholder.svg` fallback.
 
 2. **Customer views cart**
 

@@ -8,36 +8,39 @@
 ---
 
 ## Directory Structure with File Details
-  - Route loading (from `routes/` files) and registration
-  - Authentication middleware
-  - Session helpers (cart helpers, user helpers)
-  - Request handlers
-  - Shopping cart logic (session-backed cart, distinct-product count)
-  - Order checkout process
-  - Product catalog
-  - Customer management
-  - Reports and analytics
- - **Dependencies**: Models, controllers, Config.pm
-  - Order checkout process
-  - Product catalog
-  - Customer management
- - **Features**:
-  - Creates 6 tables
-  - Loads 3 default users
-  - Loads 5 sample customers
-  - Loads 20 sample products
-  - SQLite with foreign keys
-  - Database initialization is run at app startup (called from `app.pl`)
-  - DBD::SQLite >= 1.70
-  - Crypt::Bcrypt >= 0.011
-  - JSON >= 4.0
-  - Time::Piece >= 1.33
-  - File::Basename, File::Spec
+
+- Route loading (from `routes/` files) and registration
+- Authentication middleware
+- Session helpers (cart helpers, user helpers)
+- Request handlers
+- Shopping cart logic (session-backed cart, distinct-product count)
+- Order checkout process
+- Product catalog
+- Customer management
+- Reports and analytics
+- **Dependencies**: Models, controllers, Config.pm
+- Order checkout process
+- Product catalog
+- Customer management
+- **Features**:
+- Creates 6 tables
+- Loads 3 default users
+- Loads 5 sample customers
+- Loads 20 sample products
+- SQLite with foreign keys
+- Database initialization is run at app startup (called from `app.pl`)
+- DBD::SQLite >= 1.70
+- Crypt::Bcrypt >= 0.011
+- JSON >= 4.0
+- Time::Piece >= 1.33
+- File::Basename, File::Spec
 
 Note: Additional controllers exist under `lib/ECommerce/Controllers/Customer/` (for customer-facing functionality such as the cart) and `lib/ECommerce/Controllers/Admin/` for administrative endpoints. Some controllers return JSON for AJAX requests (Add-to-Cart), while others render templates.
+
 ### lib/ECommerce/ Directory
 
 #### Config.pm (110 lines)
+
 - **Package**: ECommerce::Config
 - **Contents**:
   - BASE_DIR, DB_PATH
@@ -54,15 +57,16 @@ Note: Additional controllers exist under `lib/ECommerce/Controllers/Customer/` (
 #### Database.pm (260 lines)
 
 Additional assets:
+
 - `public/css/components/modal.css` (modal + toast styles and animations)
 - `public/js/` (client-side scripts for toast, header sticky behavior, and mobile nav)
 - `public/images/placeholder.svg` (fallback product image)
 - **Methods**:
   - new() - Constructor
   - connect() - Database connection
- - **Target**: Developers
-  - create_tables() - Schema creation
-  - create_sample_data() - Populate data
+- **Target**: Developers
+- create_tables() - Schema creation
+- create_sample_data() - Populate data
 - **Features**:
   - Creates 6 tables
   - Loads 3 default users

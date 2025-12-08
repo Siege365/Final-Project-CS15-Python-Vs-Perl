@@ -149,6 +149,7 @@ hypnotoad -s app.pl
 - Customer: `customer` / `customer123`
 
 4. Test typical flows: browse products, add to cart (note: Add-to-Cart uses AJAX and displays an in-page toast), place an order and check order history.
+
 ### 2. Test Login
 
 - URL: http://localhost:3000
