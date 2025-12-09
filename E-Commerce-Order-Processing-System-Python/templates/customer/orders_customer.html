@@ -1,0 +1,195 @@
+{% extends 'layouts/default.html' %}
+{% block title %}My Orders - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        My Orders
+    </h1>
+    <p class="page-subtitle">View and track your order history.</p>
+</div>
+
+<!-- Order Stats -->
+<div class="metrics mini">
+    <div class="metric-card">
+        <div class="metric-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+        </div>
+        <h3>Total Orders</h3>
+        <div class="value">{{ stats.total_orders }}</div>
+    </div>
+    <div class="metric-card warning">
+        <div class="metric-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+        </div>
+        <h3>Pending</h3>
+        <div class="value">{{ stats.pending_orders }}</div>
+    </div>
+    <div class="metric-card info">
+        <div class="metric-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </div>
+        <h3>Processing</h3>
+        <div class="value">{{ stats.processing_orders }}</div>
+    </div>
+    <div class="metric-card success">
+        <div class="metric-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        </div>
+        <h3>Delivered</h3>
+        <div class="value">{{ stats.delivered_orders }}</div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom: 1.5rem;">
+    <form method="GET" class="filters-form">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
+            <div style="flex: 1; min-width: 150px;">
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    <option value="">All Statuses</option>
+                    <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="processing" {% if status == 'processing' %}selected{% endif %}>Processing</option>
+                    <option value="shipped" {% if status == 'shipped' %}selected{% endif %}>Shipped</option>
+                    <option value="delivered" {% if status == 'delivered' %}selected{% endif %}>Delivered</option>
+                    <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <label for="sort">Sort By</label>
+                <select id="sort" name="sort">
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Oldest First</option>
+                    <option value="total_high" {% if sort == 'total_high' %}selected{% endif %}>Total (High-Low)</option>
+                    <option value="total_low" {% if sort == 'total_low' %}selected{% endif %}>Total (Low-High)</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    Filter
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Orders List -->
+{% if orders %}
+<div class="orders-list">
+    {% for order in orders %}
+    <div class="order-card">
+        <div class="order-header">
+            <div class="order-info">
+                <h3 class="order-number">
+                    <a href="{% url 'order_detail' order.id %}">{{ order.order_number }}</a>
+                </h3>
+                <span class="order-date">{{ order.created_at|date:"F j, Y, g:i a" }}</span>
+            </div>
+            <div class="order-status">
+                <span class="status {{ order.status }}">{{ order.status }}</span>
+            </div>
+        </div>
+        
+        <div class="order-items-preview">
+            {% for item in order.items.all|slice:":3" %}
+            <div class="order-item-mini">
+                {% if item.product.image_url %}
+                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+                {% else %}
+                <div class="product-placeholder-mini">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    </svg>
+                </div>
+                {% endif %}
+                <div class="item-details">
+                    <span class="item-name">{{ item.product.name }}</span>
+                    <span class="item-qty">Qty: {{ item.quantity }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            {% if order.items.count > 3 %}
+            <div class="more-items">+{{ order.items.count|add:"-3" }} more item{% if order.items.count > 4 %}s{% endif %}</div>
+            {% endif %}
+        </div>
+
+        <div class="order-footer">
+            <div class="order-total">
+                <span class="label">Total:</span>
+                <span class="value">${{ order.total|floatformat:2 }}</span>
+            </div>
+            <a href="{% url 'order_detail' order.id %}" class="btn btn-sm">
+                View Details
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div class="pagination-container">
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="?page={{ page|add:'-1' }}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="btn btn-sm">&laquo; Previous</a>
+        {% endif %}
+
+        {% for p in page_range %}
+            {% if p == page %}
+            <span class="btn btn-sm btn-primary">{{ p }}</span>
+            {% else %}
+            <a href="?page={{ p }}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="btn btn-sm">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <a href="?page={{ page|add:'1' }}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="btn btn-sm">Next &raquo;</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<!-- No Orders -->
+<div class="empty-state">
+    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+    </svg>
+    <h2>No orders found</h2>
+    {% if status %}
+    <p>You don't have any {{ status }} orders.</p>
+    <a href="{% url 'orders' %}" class="btn">View All Orders</a>
+    {% else %}
+    <p>You haven't placed any orders yet.</p>
+    <a href="{% url 'products' %}" class="btn btn-primary">Start Shopping</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

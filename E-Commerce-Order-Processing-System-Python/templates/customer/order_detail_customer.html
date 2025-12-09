@@ -1,0 +1,257 @@
+{% extends 'layouts/default.html' %}
+{% block title %}Order {{ order.order_number }} - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'orders' %}">My Orders</a>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+        <span>{{ order.order_number }}</span>
+    </div>
+    <h1>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        Order {{ order.order_number }}
+    </h1>
+</div>
+
+<!-- Order Status Timeline -->
+<div class="card order-status-card">
+    <h2>Order Status</h2>
+    <div class="status-timeline">
+        <div class="status-step {% if order.status in 'pending,processing,shipped,delivered' %}active{% endif %} {% if order.status == 'cancelled' %}cancelled{% endif %}">
+            <div class="step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+            <span class="step-label">Pending</span>
+            {% if order.status == 'pending' %}
+            <span class="step-current">Current</span>
+            {% endif %}
+        </div>
+        <div class="status-connector {% if order.status in 'processing,shipped,delivered' %}active{% endif %}"></div>
+        <div class="status-step {% if order.status in 'processing,shipped,delivered' %}active{% endif %} {% if order.status == 'cancelled' %}cancelled{% endif %}">
+            <div class="step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </div>
+            <span class="step-label">Processing</span>
+            {% if order.status == 'processing' %}
+            <span class="step-current">Current</span>
+            {% endif %}
+        </div>
+        <div class="status-connector {% if order.status in 'shipped,delivered' %}active{% endif %}"></div>
+        <div class="status-step {% if order.status in 'shipped,delivered' %}active{% endif %} {% if order.status == 'cancelled' %}cancelled{% endif %}">
+            <div class="step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="3" width="15" height="13"></rect>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+            </div>
+            <span class="step-label">Shipped</span>
+            {% if order.status == 'shipped' %}
+            <span class="step-current">Current</span>
+            {% endif %}
+        </div>
+        <div class="status-connector {% if order.status == 'delivered' %}active{% endif %}"></div>
+        <div class="status-step {% if order.status == 'delivered' %}active{% endif %} {% if order.status == 'cancelled' %}cancelled{% endif %}">
+            <div class="step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <span class="step-label">Delivered</span>
+            {% if order.status == 'delivered' %}
+            <span class="step-current">Complete</span>
+            {% endif %}
+        </div>
+    </div>
+    {% if order.status == 'cancelled' %}
+    <div class="cancelled-notice">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+        This order has been cancelled.
+    </div>
+    {% endif %}
+</div>
+
+<div class="order-detail-layout">
+    <!-- Order Items -->
+    <div class="order-items-section">
+        <div class="card">
+            <div class="card-header">
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    </svg>
+                    Order Items
+                </h2>
+            </div>
+            <div class="order-items-list">
+                {% for item in order.items.all %}
+                <div class="order-item">
+                    <div class="item-image">
+                        {% if item.product.image_url %}
+                        <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+                        {% else %}
+                        <div class="product-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="item-details">
+                        <h4>{{ item.product.name }}</h4>
+                        <p class="item-category">{{ item.product.category }}</p>
+                        <p class="item-price">${{ item.price|floatformat:2 }} x {{ item.quantity }}</p>
+                    </div>
+                    <div class="item-subtotal">
+                        ${{ item.subtotal|floatformat:2 }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-summary-section">
+        <!-- Summary Card -->
+        <div class="card">
+            <h2>Order Summary</h2>
+            <div class="order-meta">
+                <div class="meta-row">
+                    <span class="label">Order Number:</span>
+                    <span class="value">{{ order.order_number }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="label">Order Date:</span>
+                    <span class="value">{{ order.created_at|date:"F j, Y, g:i a" }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="label">Payment Method:</span>
+                    <span class="value">{{ order.payment_method|default:"N/A" }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="label">Status:</span>
+                    <span class="status {{ order.status }}">{{ order.status }}</span>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>Subtotal</span>
+                    <span>${{ order.subtotal|floatformat:2 }}</span>
+                </div>
+                <div class="price-row">
+                    <span>Tax</span>
+                    <span>${{ order.tax|floatformat:2 }}</span>
+                </div>
+                <div class="price-row">
+                    <span>Shipping</span>
+                    <span>{% if order.shipping == 0 %}<span class="free-shipping">FREE</span>{% else %}${{ order.shipping|floatformat:2 }}{% endif %}</span>
+                </div>
+                <div class="price-row total">
+                    <span>Total</span>
+                    <span>${{ order.total|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="card">
+            <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Shipping Address
+            </h2>
+            <div class="shipping-address">
+                {{ order.shipping_address|linebreaksbr }}
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="order-actions">
+            <a href="{% url 'orders' %}" class="btn btn-block">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Orders
+            </a>
+            {% if order.status == 'pending' %}
+            <button class="btn btn-danger btn-block" id="cancel-order-btn" data-order-id="{{ order.id }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                Cancel Order
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cancelBtn = document.getElementById('cancel-order-btn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            if (!confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+                return;
+            }
+
+            const orderId = this.dataset.orderId;
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-small"></span> Cancelling...';
+
+            fetch('{% url "api_order_cancel" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ order_id: orderId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message || 'Failed to cancel order');
+                    this.disabled = false;
+                    this.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Cancel Order';
+                }
+            })
+            .catch(() => {
+                alert('An error occurred');
+                this.disabled = false;
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

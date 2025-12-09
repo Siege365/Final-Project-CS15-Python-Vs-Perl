@@ -1,0 +1,338 @@
+{% extends 'layouts/default.html' %}
+{% block title %}Edit {{ product.name }} - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'admin_products' %}">Products</a>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+        <span>Edit Product</span>
+    </div>
+    <h1>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        Edit Product
+    </h1>
+</div>
+
+<div class="card">
+    <form method="POST" action="{% url 'admin_product_edit' product.id %}" enctype="multipart/form-data" class="product-form" id="product-form">
+        {% csrf_token %}
+        
+        <div class="form-layout">
+            <!-- Left Column - Main Info -->
+            <div class="form-main">
+                <div class="form-group">
+                    <label for="name">Product Name <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" value="{{ product.name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description <span class="required">*</span></label>
+                    <textarea id="description" name="description" rows="5" required>{{ product.description }}</textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Price ($) <span class="required">*</span></label>
+                        <input type="number" id="price" name="price" step="0.01" min="0" value="{{ product.price }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock Quantity <span class="required">*</span></label>
+                        <input type="number" id="stock" name="stock" min="0" value="{{ product.stock }}" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Category <span class="required">*</span></label>
+                        <select id="category" name="category" required>
+                            <option value="">Select a category</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat }}" {% if product.category == cat %}selected{% endif %}>{{ cat }}</option>
+                            {% endfor %}
+                            <option value="__new__">+ Add New Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="new-category-group" style="display: none;">
+                        <label for="new_category">New Category Name</label>
+                        <input type="text" id="new_category" name="new_category" placeholder="Enter new category">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="sku">SKU (Stock Keeping Unit)</label>
+                    <input type="text" id="sku" name="sku" value="{{ product.sku|default:'' }}" placeholder="e.g., PROD-001">
+                </div>
+
+                <!-- Inventory Management -->
+                <div class="inventory-section">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                        Quick Stock Adjustment
+                    </h3>
+                    <div class="stock-adjustment">
+                        <div class="form-group">
+                            <label for="adjustment_type">Adjustment Type</label>
+                            <select id="adjustment_type" name="adjustment_type">
+                                <option value="">No Adjustment</option>
+                                <option value="add">Add Stock</option>
+                                <option value="remove">Remove Stock</option>
+                                <option value="set">Set Stock Level</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="adjustment-quantity-group" style="display: none;">
+                            <label for="adjustment_quantity">Quantity</label>
+                            <input type="number" id="adjustment_quantity" name="adjustment_quantity" min="0" value="0">
+                        </div>
+                        <div class="form-group" id="adjustment-reason-group" style="display: none;">
+                            <label for="adjustment_reason">Reason</label>
+                            <input type="text" id="adjustment_reason" name="adjustment_reason" placeholder="e.g., Restock, Damaged items">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Image & Status -->
+            <div class="form-sidebar">
+                <div class="form-group">
+                    <label>Product Image</label>
+                    <div class="image-upload-area" id="image-upload-area">
+                        <input type="file" id="image" name="image" accept="image/*" hidden>
+                        <div class="upload-placeholder" id="upload-placeholder" {% if product.image_url %}style="display: none;"{% endif %}>
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span>Click to upload image</span>
+                            <small>PNG, JPG up to 5MB</small>
+                        </div>
+                        <img id="image-preview" class="image-preview" src="{{ product.image_url }}" {% if not product.image_url %}style="display: none;"{% endif %}>
+                    </div>
+                    {% if product.image_url %}
+                    <button type="button" class="btn btn-sm btn-danger" id="remove-image" style="margin-top: 0.5rem;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        Remove Image
+                    </button>
+                    <input type="hidden" name="remove_image" id="remove_image_flag" value="0">
+                    {% endif %}
+                    <div class="form-group" style="margin-top: 0.5rem;">
+                        <label for="image_url">Or enter image URL</label>
+                        <input type="url" id="image_url" name="image_url" value="{{ product.image_url|default:'' }}" placeholder="https://example.com/image.jpg">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_active" value="1" {% if product.is_active %}checked{% endif %}>
+                        <span>Product is active</span>
+                    </label>
+                    <small class="form-hint">Inactive products won't be shown to customers</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_featured" value="1" {% if product.is_featured %}checked{% endif %}>
+                        <span>Featured product</span>
+                    </label>
+                    <small class="form-hint">Featured products appear on the homepage</small>
+                </div>
+
+                <!-- Product Stats -->
+                <div class="product-stats">
+                    <h4>Product Statistics</h4>
+                    <div class="stat-row">
+                        <span>Created:</span>
+                        <span>{{ product.created_at|date:"M j, Y" }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Last Updated:</span>
+                        <span>{{ product.updated_at|date:"M j, Y" }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Times Ordered:</span>
+                        <span>{{ product.times_ordered|default:"0" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'admin_products' %}" class="btn">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Recent Inventory Transactions -->
+{% if inventory_history %}
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            Recent Inventory Transactions
+        </h2>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Reason</th>
+                <th>By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in inventory_history %}
+            <tr>
+                <td>{{ transaction.created_at|date:"M j, Y g:i a" }}</td>
+                <td>
+                    <span class="badge {% if transaction.transaction_type == 'add' %}success{% elif transaction.transaction_type == 'remove' %}danger{% else %}info{% endif %}">
+                        {{ transaction.transaction_type }}
+                    </span>
+                </td>
+                <td>{% if transaction.transaction_type == 'add' %}+{% elif transaction.transaction_type == 'remove' %}-{% endif %}{{ transaction.quantity }}</td>
+                <td>{{ transaction.reason|default:"-" }}</td>
+                <td>{{ transaction.user.username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Category selection
+    const categorySelect = document.getElementById('category');
+    const newCategoryGroup = document.getElementById('new-category-group');
+    const newCategoryInput = document.getElementById('new_category');
+
+    categorySelect.addEventListener('change', function() {
+        if (this.value === '__new__') {
+            newCategoryGroup.style.display = 'block';
+            newCategoryInput.required = true;
+        } else {
+            newCategoryGroup.style.display = 'none';
+            newCategoryInput.required = false;
+        }
+    });
+
+    // Stock adjustment
+    const adjustmentType = document.getElementById('adjustment_type');
+    const adjustmentQtyGroup = document.getElementById('adjustment-quantity-group');
+    const adjustmentReasonGroup = document.getElementById('adjustment-reason-group');
+
+    adjustmentType.addEventListener('change', function() {
+        if (this.value) {
+            adjustmentQtyGroup.style.display = 'block';
+            adjustmentReasonGroup.style.display = 'block';
+        } else {
+            adjustmentQtyGroup.style.display = 'none';
+            adjustmentReasonGroup.style.display = 'none';
+        }
+    });
+
+    // Image upload preview
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('image-preview');
+    const uploadPlaceholder = document.getElementById('upload-placeholder');
+    const uploadArea = document.getElementById('image-upload-area');
+
+    uploadArea.addEventListener('click', () => imageInput.click());
+
+    imageInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                uploadPlaceholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Remove image
+    const removeImageBtn = document.getElementById('remove-image');
+    if (removeImageBtn) {
+        removeImageBtn.addEventListener('click', function() {
+            imagePreview.style.display = 'none';
+            uploadPlaceholder.style.display = 'flex';
+            document.getElementById('image_url').value = '';
+            document.getElementById('remove_image_flag').value = '1';
+            this.style.display = 'none';
+        });
+    }
+
+    // Image URL preview
+    const imageUrlInput = document.getElementById('image_url');
+    imageUrlInput.addEventListener('change', function() {
+        if (this.value) {
+            imagePreview.src = this.value;
+            imagePreview.style.display = 'block';
+            uploadPlaceholder.style.display = 'none';
+        }
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function() {
+        this.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            imageInput.files = e.dataTransfer.files;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                uploadPlaceholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Form submission
+    const form = document.getElementById('product-form');
+    form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-small"></span> Saving...';
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,263 @@
+{% extends 'layouts/default.html' %}
+{% block title %}Manage Products - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        </svg>
+        Manage Products
+    </h1>
+    <p class="page-subtitle">Add, edit, and manage your product inventory.</p>
+</div>
+
+<!-- Actions Bar -->
+<div class="actions-bar">
+    <a href="{% url 'admin_product_add' %}" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add New Product
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom: 1.5rem;">
+    <form method="GET" class="filters-form">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
+            <div style="flex: 2; min-width: 200px;">
+                <label for="search">Search</label>
+                <input type="text" id="search" name="search" placeholder="Search by name..." value="{{ search|default:'' }}">
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <label for="filter">Stock Filter</label>
+                <select id="filter" name="filter">
+                    <option value="">All Products</option>
+                    <option value="low_stock" {% if filter == 'low_stock' %}selected{% endif %}>Low Stock (&lt;= 10)</option>
+                    <option value="out_of_stock" {% if filter == 'out_of_stock' %}selected{% endif %}>Out of Stock</option>
+                    <option value="in_stock" {% if filter == 'in_stock' %}selected{% endif %}>In Stock</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    Filter
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Products Table -->
+<div class="card">
+    <div class="card-header">
+        <h2>Products ({{ total_products }})</h2>
+    </div>
+    {% if products %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th style="width: 150px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        <div class="product-thumb">
+                            {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% else %}
+                            <div class="product-placeholder-sm">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                </svg>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <strong>{{ product.name }}</strong>
+                        <p class="product-desc-preview">{{ product.description|truncatewords:10 }}</p>
+                    </td>
+                    <td>{{ product.category }}</td>
+                    <td>${{ product.price|floatformat:2 }}</td>
+                    <td>
+                        <span class="stock-badge {% if product.stock == 0 %}out{% elif product.stock <= 10 %}low{% else %}good{% endif %}">
+                            {{ product.stock }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if product.is_active %}
+                        <span class="status-badge active">Active</span>
+                        {% else %}
+                        <span class="status-badge inactive">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{% url 'admin_product_edit' product.id %}" class="btn btn-sm" title="Edit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </a>
+                            <button class="btn btn-sm btn-danger delete-product-btn" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" title="Delete">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="pagination-container">
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="?page={{ page|add:'-1' }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if filter %}&filter={{ filter }}{% endif %}" class="btn btn-sm">&laquo; Previous</a>
+            {% endif %}
+
+            {% for p in page_range %}
+                {% if p == page %}
+                <span class="btn btn-sm btn-primary">{{ p }}</span>
+                {% else %}
+                <a href="?page={{ p }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if filter %}&filter={{ filter }}{% endif %}" class="btn btn-sm">{{ p }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page < total_pages %}
+            <a href="?page={{ page|add:'1' }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if filter %}&filter={{ filter }}{% endif %}" class="btn btn-sm">Next &raquo;</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        </svg>
+        <h3>No products found</h3>
+        <p>{% if search or category or filter %}Try adjusting your filters.{% else %}Get started by adding your first product.{% endif %}</p>
+        {% if not search and not category and not filter %}
+        <a href="{% url 'admin_product_add' %}" class="btn btn-primary">Add Product</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" id="delete-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h2>Delete Product</h2>
+            <button class="modal-close" id="modal-close">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete <strong id="delete-product-name"></strong>?</p>
+            <p class="warning-text">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" id="cancel-delete">Cancel</button>
+            <button class="btn btn-danger" id="confirm-delete">Delete</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('delete-modal');
+    const modalClose = document.getElementById('modal-close');
+    const cancelDelete = document.getElementById('cancel-delete');
+    const confirmDelete = document.getElementById('confirm-delete');
+    const productNameEl = document.getElementById('delete-product-name');
+    let productToDelete = null;
+
+    // Open delete modal
+    document.querySelectorAll('.delete-product-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            productToDelete = this.dataset.productId;
+            productNameEl.textContent = this.dataset.productName;
+            modal.classList.add('show');
+        });
+    });
+
+    // Close modal
+    function closeModal() {
+        modal.classList.remove('show');
+        productToDelete = null;
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    cancelDelete.addEventListener('click', closeModal);
+    document.querySelector('.modal-backdrop').addEventListener('click', closeModal);
+
+    // Confirm delete
+    confirmDelete.addEventListener('click', function() {
+        if (!productToDelete) return;
+
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-small"></span> Deleting...';
+
+        fetch('{% url "api_product_delete" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ product_id: productToDelete })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Failed to delete product');
+                this.disabled = false;
+                this.innerHTML = 'Delete';
+            }
+        })
+        .catch(() => {
+            alert('An error occurred');
+            this.disabled = false;
+            this.innerHTML = 'Delete';
+        });
+    });
+});
+</script>
+{% endblock %}

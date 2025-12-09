@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" class="auth-html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ APP_NAME }}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="/static/images/logo.svg">
+</head>
+<body class="auth-page">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="auth-alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <script>
+    // Auto-dismiss alerts
+    setTimeout(function() {
+        document.querySelectorAll('.auth-alert').forEach(alert => {
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 300);
+        });
+    }, 5000);
+    </script>
+</body>
+</html>
