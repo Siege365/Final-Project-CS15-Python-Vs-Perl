@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+from django.db import models
 from functools import wraps
 
 from lib.ECommerce.Models.Product import Product
@@ -247,30 +248,180 @@ def customer_detail(request, customer_id):
 def reports(request):
     """Show reports and analytics."""
     from django.db.models import Sum, Count, F
+    from django.utils import timezone
+    from datetime import timedelta
+    import json
 
-    # Get order stats
-    stats = Order.get_order_stats()
+    # Get date range parameters
+    period = request.GET.get('period', 'month')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    
+    # Calculate date range
+    today = timezone.now().date()
+    if period == 'today':
+        start_date = today
+        end_date = today
+    elif period == 'week':
+        start_date = today - timedelta(days=7)
+        end_date = today
+    elif period == 'month':
+        start_date = today - timedelta(days=30)
+        end_date = today
+    elif period == 'quarter':
+        start_date = today - timedelta(days=90)
+        end_date = today
+    elif period == 'year':
+        start_date = today - timedelta(days=365)
+        end_date = today
+    elif period == 'custom' and date_from and date_to:
+        from datetime import datetime
+        start_date = datetime.strptime(date_from, '%Y-%m-%d').date()
+        end_date = datetime.strptime(date_to, '%Y-%m-%d').date()
+    else:
+        start_date = today - timedelta(days=30)
+        end_date = today
 
-    # Get top customers
+    # Filter orders by date range
+    orders_in_range = Order.objects.filter(
+        created_at__date__gte=start_date,
+        created_at__date__lte=end_date
+    )
+
+    # Total revenue (exclude cancelled)
+    total_revenue = orders_in_range.exclude(status='cancelled').aggregate(
+        total=Sum('total')
+    )['total'] or 0
+
+    # Total orders
+    total_orders = orders_in_range.count()
+
+    # Average order value
+    avg_order_value = total_revenue / total_orders if total_orders > 0 else 0
+
+    # Products sold
+    from lib.ECommerce.Models.Order import OrderItem
+    products_sold = OrderItem.objects.filter(
+        order__in=orders_in_range
+    ).aggregate(total=Sum('quantity'))['total'] or 0
+    
+    unique_products = OrderItem.objects.filter(
+        order__in=orders_in_range
+    ).values('product').distinct().count()
+
+    # New customers in period
+    new_customers = Customer.objects.filter(
+        created_at__date__gte=start_date,
+        created_at__date__lte=end_date
+    ).count()
+    
+    # Returning customers (customers with orders before and during period)
+    returning_customers = 0  # Simplified for now
+
+    # Top products
+    top_products_data = OrderItem.objects.filter(
+        order__in=orders_in_range.exclude(status='cancelled')
+    ).values('product_name').annotate(
+        quantity_sold=Sum('quantity'),
+        revenue=Sum('subtotal')
+    ).order_by('-revenue')[:10]
+    
+    top_products = [
+        {
+            'name': p['product_name'],
+            'quantity_sold': p['quantity_sold'],
+            'revenue': float(p['revenue'] or 0)
+        }
+        for p in top_products_data
+    ]
+
+    # Top customers
     top_customers = Customer.objects.annotate(
-        order_count=Count('orders'),
-        total_spent=Sum('orders__total')
+        order_count=Count('orders', filter=models.Q(
+            orders__created_at__date__gte=start_date,
+            orders__created_at__date__lte=end_date
+        )),
+        total_spent=Sum('orders__total', filter=models.Q(
+            orders__created_at__date__gte=start_date,
+            orders__created_at__date__lte=end_date,
+        ) & ~models.Q(orders__status='cancelled'))
     ).filter(order_count__gt=0).order_by('-total_spent')[:10]
 
-    # Add email to customer data
-    top_customers_data = []
-    for cust in top_customers:
-        top_customers_data.append({
-            'first_name': cust.first_name,
-            'last_name': cust.last_name,
-            'email': cust.user.email if cust.user else '',
-            'order_count': cust.order_count,
-            'total_spent': cust.total_spent or 0,
-        })
+    top_customers_list = [
+        {
+            'first_name': c.first_name,
+            'last_name': c.last_name,
+            'order_count': c.order_count,
+            'total_spent': float(c.total_spent or 0)
+        }
+        for c in top_customers
+    ]
+
+    # Chart data - Revenue over time
+    revenue_by_day = orders_in_range.exclude(status='cancelled').extra(
+        select={'day': 'DATE(created_at)'}
+    ).values('day').annotate(
+        daily_revenue=Sum('total')
+    ).order_by('day')
+    
+    revenue_labels = [str(r['day']) for r in revenue_by_day]
+    revenue_data = [float(r['daily_revenue'] or 0) for r in revenue_by_day]
+    
+    # If no data, provide empty arrays
+    if not revenue_labels:
+        revenue_labels = [str(start_date)]
+        revenue_data = [0]
+
+    # Category sales data
+    category_sales = OrderItem.objects.filter(
+        order__in=orders_in_range.exclude(status='cancelled')
+    ).values('product__category').annotate(
+        total=Sum('subtotal')
+    ).order_by('-total')[:6]
+    
+    category_labels = [c['product__category'] or 'Uncategorized' for c in category_sales]
+    category_data = [float(c['total'] or 0) for c in category_sales]
+    
+    if not category_labels:
+        category_labels = ['No Data']
+        category_data = [0]
+
+    # Status distribution
+    status_counts = orders_in_range.values('status').annotate(count=Count('id'))
+    status_map = {'pending': 0, 'processing': 0, 'shipped': 0, 'delivered': 0, 'cancelled': 0}
+    for s in status_counts:
+        if s['status'] in status_map:
+            status_map[s['status']] = s['count']
+    status_data = [status_map['pending'], status_map['processing'], status_map['shipped'], status_map['delivered'], status_map['cancelled']]
+
+    # Build report data
+    report = {
+        'total_revenue': total_revenue,
+        'total_orders': total_orders,
+        'average_order_value': avg_order_value,
+        'products_sold': products_sold,
+        'unique_products': unique_products,
+        'new_customers': new_customers,
+        'returning_customers': returning_customers,
+        'top_products': top_products,
+        'top_customers': top_customers_list,
+    }
+
+    # Chart data for JavaScript
+    chart_data = {
+        'revenue_labels': json.dumps(revenue_labels),
+        'revenue_data': json.dumps(revenue_data),
+        'category_labels': json.dumps(category_labels),
+        'category_data': json.dumps(category_data),
+        'status_data': json.dumps(status_data),
+    }
 
     return render(request, 'admin/reports.html', {
-        'stats': stats,
-        'top_customers': top_customers_data,
+        'report': report,
+        'chart_data': chart_data,
+        'period': period,
+        'date_from': date_from,
+        'date_to': date_to,
         'role': request.user.role,
     })
 

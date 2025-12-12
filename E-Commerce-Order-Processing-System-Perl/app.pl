@@ -16,12 +16,17 @@ use ECommerce::Database;
 use ECommerce::Config;
 use Mojo::JSON qw(decode_json encode_json);
 
+# Load environment variables from .env file
+use Dotenv;
+Dotenv::load("$FindBin::Bin/.env") if -f "$FindBin::Bin/.env";
+
 # Initialize database
 my $db = ECommerce::Database->new();
 $db->initialize_database();
 
-# Enable sessions
-app->secrets(['e-commerce-secret-key-change-in-production']);
+# Enable sessions - Get secret from environment variable
+my $secret_key = $ENV{MOJOLICIOUS_SECRET_KEY} || 'dev-secret-key-change-in-production';
+app->secrets([$secret_key]);
 app->sessions->default_expiration(3600); # 1 hour
 
 # Helper to check if user is logged in

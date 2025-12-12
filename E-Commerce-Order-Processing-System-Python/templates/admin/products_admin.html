@@ -3,24 +3,24 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-        </svg>
-        Manage Products
-    </h1>
+    <div class="page-header-row">
+        <h1>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+            Manage Products
+        </h1>
+        <div class="page-header-actions">
+            <a href="{% url 'admin_product_add' %}" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add New Product
+            </a>
+        </div>
+    </div>
     <p class="page-subtitle">Add, edit, and manage your product inventory.</p>
-</div>
-
-<!-- Actions Bar -->
-<div class="actions-bar">
-    <a href="{% url 'admin_product_add' %}" class="btn btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        Add New Product
-    </a>
 </div>
 
 <!-- Filters -->
@@ -141,7 +141,19 @@
     <div class="pagination-container">
         <div class="pagination">
             {% if page > 1 %}
-            <a href="?page={{ page|add:'-1' }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if filter %}&filter={{ filter }}{% endif %}" class="btn btn-sm">&laquo; Previous</a>
+            <a href="?page={{ page|add:'-1' }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if filter %}&filter={{ filter }}{% endif %}" class="btn btn-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Previous
+            </a>
+            {% else %}
+            <button class="btn btn-sm" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Previous
+            </button>
             {% endif %}
 
             {% for p in page_range %}
@@ -153,7 +165,19 @@
             {% endfor %}
 
             {% if page < total_pages %}
-            <a href="?page={{ page|add:'1' }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if filter %}&filter={{ filter }}{% endif %}" class="btn btn-sm">Next &raquo;</a>
+            <a href="?page={{ page|add:'1' }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if filter %}&filter={{ filter }}{% endif %}" class="btn btn-sm">
+                Next
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </a>
+            {% else %}
+            <button class="btn btn-sm" disabled>
+                Next
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
             {% endif %}
         </div>
     </div>

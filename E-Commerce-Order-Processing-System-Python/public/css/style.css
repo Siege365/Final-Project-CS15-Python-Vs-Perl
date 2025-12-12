@@ -597,6 +597,14 @@ button {
     margin-bottom: 2rem;
 }
 
+.page-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
 .page-header h1 {
     display: flex;
     align-items: center;
@@ -604,10 +612,17 @@ button {
     font-size: 1.75rem;
     font-weight: 700;
     color: var(--gray-900);
+    margin: 0;
 }
 
 .page-header h1 svg {
     color: var(--primary);
+}
+
+.page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .page-subtitle {
@@ -2013,12 +2028,50 @@ tbody tr td:last-child {
 .pagination-container {
     display: flex;
     justify-content: center;
-    margin-top: 2rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--gray-100);
 }
 
 .pagination {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
+}
+
+.pagination .btn {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid var(--gray-200);
+    background: var(--white);
+    color: var(--gray-600);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.pagination .btn:hover:not(:disabled):not(.btn-primary) {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--gray-50);
+}
+
+.pagination .btn.btn-primary {
+    border-color: var(--primary);
+    pointer-events: none;
+}
+
+.pagination .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination .btn svg {
+    width: 16px;
+    height: 16px;
 }
 
 /* Filters Form */
@@ -2422,7 +2475,8 @@ tbody tr td:last-child {
     transition: color var(--transition-fast);
 }
 
-.input-with-icon input {
+/* Only add left padding when icon is actually present */
+.input-with-icon.has-icon input {
     padding-left: 2.75rem !important;
 }
 
@@ -3690,7 +3744,35 @@ tbody tr td:last-child {
     visibility: visible;
 }
 
+/* Modal - hidden by default */
 .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal .modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.modal .modal-content {
+    position: relative;
     background: var(--white);
     border-radius: var(--radius-xl);
     width: 100%;
@@ -3698,11 +3780,28 @@ tbody tr td:last-child {
     max-height: 90vh;
     overflow: hidden;
     transform: translateY(20px);
-    transition: transform var(--transition-normal);
+    animation: modalSlideIn 0.3s ease forwards;
+    z-index: 1;
 }
 
-.modal-overlay.show .modal {
+.modal.show .modal-content {
     transform: translateY(0);
+}
+
+.modal-sm .modal-content,
+.modal .modal-content.modal-sm {
+    max-width: 400px;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .modal-header {
@@ -3987,3 +4086,562 @@ tbody tr td:last-child {
         margin-left: 0;
     }
 }
+
+/* ============================================
+   Auth Page Fade-In Animation
+   ============================================ */
+.auth-page {
+    animation: authFadeIn 0.6s ease-out;
+}
+
+@keyframes authFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.login-box,
+.register-box {
+    animation: authSlideIn 0.6s ease-out;
+}
+
+@keyframes authSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   Empty State Button Fix (Browse Products)
+   ============================================ */
+.empty-state .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    max-width: 200px;
+}
+
+.empty-state .btn svg {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    animation: none;
+    color: currentColor;
+}
+
+/* ============================================
+   Product Form Layout Fix
+   ============================================ */
+.product-form {
+    width: 100%;
+}
+
+.product-form .form-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .product-form .form-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.product-form .form-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.product-form .form-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.product-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.product-form .form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+}
+
+.product-form .form-group label .required {
+    color: var(--error);
+}
+
+.product-form .form-group input,
+.product-form .form-group select,
+.product-form .form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+    background: var(--white);
+}
+
+.product-form .form-group input:focus,
+.product-form .form-group select:focus,
+.product-form .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.product-form .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .product-form .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.product-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.product-form .image-upload-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: var(--gray-50);
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-form .image-upload-area:hover,
+.product-form .image-upload-area.dragover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.product-form .upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-500);
+}
+
+.product-form .upload-placeholder svg {
+    color: var(--gray-400);
+}
+
+.product-form .upload-placeholder small {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+}
+
+.product-form .image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+}
+
+.product-form .inventory-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.product-form .inventory-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--gray-800);
+}
+
+.product-form .stock-adjustment {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .product-form .stock-adjustment {
+        grid-template-columns: 1fr;
+    }
+}
+
+.product-form .product-stats {
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.product-form .product-stats h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 0.75rem;
+}
+
+.product-form .stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8125rem;
+    padding: 0.375rem 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.product-form .stat-row:last-child {
+    border-bottom: none;
+}
+
+.product-form .stat-row span:first-child {
+    color: var(--gray-500);
+}
+
+.product-form .stat-row span:last-child {
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+/* ============================================
+   Customer Page Fixes
+   ============================================ */
+.customer-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.customer-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.customer-avatar.small {
+    width: 28px;
+    height: 28px;
+    font-size: 0.625rem;
+}
+
+.customer-name {
+    display: flex;
+    flex-direction: column;
+}
+
+.customer-name strong {
+    font-size: 0.875rem;
+    color: var(--gray-800);
+}
+
+.customer-name small {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+/* Customer Detail Page Spacing Fix */
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.detail-section {
+    padding: 1.25rem;
+}
+
+.detail-row {
+    display: flex;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-500);
+    width: 140px;
+    flex-shrink: 0;
+}
+
+.detail-value {
+    font-size: 0.875rem;
+    color: var(--gray-800);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+}
+
+.stat-item .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+.stat-item .stat-label {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    margin-top: 0.25rem;
+}
+
+/* ============================================
+   Reports Page Styling
+   ============================================ */
+.date-range-form {
+    padding: 1.25rem;
+}
+
+.date-range-form label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    margin-bottom: 0.5rem;
+}
+
+.date-range-form select,
+.date-range-form input[type="date"] {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.date-range-form select:hover,
+.date-range-form input[type="date"]:hover {
+    border-color: var(--gray-400);
+}
+
+.date-range-form select:focus,
+.date-range-form input[type="date"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.charts-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.charts-row .chart-card.large {
+    grid-column: span 2;
+}
+
+@media (max-width: 1024px) {
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .charts-row .chart-card.large {
+        grid-column: span 1;
+    }
+}
+
+.chart-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.chart-container {
+    padding: 1rem 1.25rem 1.25rem;
+    height: 280px;
+}
+
+.chart-card.large .chart-container {
+    height: 320px;
+}
+
+.export-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1.25rem;
+}
+
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.rank-badge.top {
+    background: linear-gradient(135deg, var(--secondary) 0%, #f97316 100%);
+    color: white;
+}
+
+/* ============================================
+   Confirmation Modal Styles
+   ============================================ */
+.modal .warning-text {
+    color: var(--error);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* ============================================
+   Export Modal Styles
+   ============================================ */
+.export-modal-content {
+    padding: 1.5rem;
+}
+
+.export-modal-content .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.export-modal-content .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.export-modal-content .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.export-modal-content .radio-option:hover {
+    border-color: var(--primary);
+    background: var(--gray-50);
+}
+
+.export-modal-content .radio-option.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.export-modal-content .format-options {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.export-modal-content .format-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.export-modal-content .format-btn:hover {
+    border-color: var(--primary);
+}
+
+.export-modal-content .format-btn.selected {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+}
+
+.export-modal-content .format-btn svg {
+    display: block;
+    margin: 0 auto 0.5rem;
+}
+
+/* ============================================
+   Infinite Scroll Loading Indicator
+   ============================================ */
+.infinite-scroll-status {
+    text-align: center;
+    padding: 2rem;
+    color: var(--gray-500);
+}
+
+.infinite-scroll-status .spinner {
+    margin: 0 auto 1rem;
+}
+
+.end-of-products {
+    text-align: center;
+    padding: 2rem;
+    color: var(--gray-400);
+    font-size: 0.875rem;
+}
+

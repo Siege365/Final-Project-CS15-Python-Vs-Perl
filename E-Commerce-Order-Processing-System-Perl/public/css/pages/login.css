@@ -255,6 +255,14 @@ body.auth-page footer {
     padding: 40px 50px;
 }
 
+/* Wider form for register mode (two-column inputs) */
+.login-wrapper.register-mode .login-box form {
+    /* Allow the register form to fill the right panel so inputs use the full column width */
+    max-width: none;
+    width: 100%;
+    margin: 0;
+}
+
 /* Logo */
 .login-logo {
     width: 80px;
@@ -309,6 +317,10 @@ body.auth-page footer {
     padding: 0;
     box-shadow: none;
     animation: fadeInUp 0.6s ease-out 0.4s both;
+    /* Constrain form width so inputs don't stretch full page */
+    max-width: 540px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .login-box .form-group {
@@ -348,9 +360,9 @@ body.auth-page footer {
 .login-box input[type="password"],
 .login-box input[type="tel"] {
     width: 100%;
-    padding: 16px 18px;
+    padding: 12px 14px; /* slightly reduced to shorten visual length */
     border: 2px solid var(--gray-200);
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 15px;
     background: var(--gray-100);
     transition: all 0.3s ease;

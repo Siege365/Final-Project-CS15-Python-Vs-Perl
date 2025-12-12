@@ -88,7 +88,8 @@ textarea:focus {
 
 .input-with-icon input,
 .input-with-icon select {
-    padding-left: 48px;
+    /* Reduce left padding now that icons were removed */
+    padding-left: 14px;
 }
 
 .input-with-icon .input-icon {

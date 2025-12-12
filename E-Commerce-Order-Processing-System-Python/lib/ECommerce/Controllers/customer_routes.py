@@ -148,6 +148,60 @@ def cart_remove(request):
     return redirect('cart')
 
 
+@login_required
+@require_POST
+def api_cart_add(request):
+    """API endpoint for adding to cart via JSON."""
+    import json
+    
+    try:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        quantity = int(data.get('quantity', 1))
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'success': False, 'message': 'Invalid request data'})
+    
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Product not found'})
+    
+    # Check stock
+    if product.stock_quantity < quantity:
+        return JsonResponse({'success': False, 'message': 'Not enough stock available'})
+    
+    cart = request.session.get('cart', [])
+    
+    # Check if product already in cart
+    found = False
+    for item in cart:
+        if str(item['product_id']) == str(product_id):
+            item['quantity'] += quantity
+            found = True
+            break
+    
+    if not found:
+        cart.append({
+            'product_id': product.id,
+            'name': product.name,
+            'price': float(product.price),
+            'quantity': quantity,
+            'image_url': product.image_url or '',
+        })
+    
+    request.session['cart'] = cart
+    request.session.modified = True
+    
+    # Calculate cart count
+    cart_count = sum(item['quantity'] for item in cart)
+    
+    return JsonResponse({
+        'success': True,
+        'product_name': product.name,
+        'cart_count': cart_count
+    })
+
+
 # =============================================================================
 # CHECKOUT
 # =============================================================================
@@ -333,6 +387,9 @@ urlpatterns = [
     path('cart/add/', cart_add, name='customer_cart_add'),
     path('cart/remove/', cart_remove, name='cart_remove'),
     path('cart/remove/', cart_remove, name='customer_cart_remove'),
+    
+    # Cart API (for AJAX)
+    path('api/cart/add/', api_cart_add, name='api_cart_add'),
 
     # Checkout
     path('checkout/', checkout, name='checkout'),

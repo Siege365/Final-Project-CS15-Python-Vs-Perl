@@ -27,7 +27,11 @@ input[type="date"],
 select,
 textarea {
     width: 100%;
-    padding: 0.625rem 0.875rem;
+    /* ensure padding and sizing are consistent inside inputs */
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    min-height: 44px;
+    line-height: 1.25;
     font-size: var(--font-size-sm);
     color: var(--text-primary);
     background-color: var(--white);

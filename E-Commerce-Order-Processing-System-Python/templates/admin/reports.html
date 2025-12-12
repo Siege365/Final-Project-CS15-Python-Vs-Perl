@@ -214,14 +214,7 @@
             <tbody>
                 {% for customer in report.top_customers %}
                 <tr>
-                    <td>
-                        <div class="customer-cell">
-                            <div class="customer-avatar small">
-                                {{ customer.first_name.0 }}{{ customer.last_name.0 }}
-                            </div>
-                            <span>{{ customer.first_name }} {{ customer.last_name }}</span>
-                        </div>
-                    </td>
+                    <td>{{ customer.first_name }} {{ customer.last_name }}</td>
                     <td>{{ customer.order_count }}</td>
                     <td><strong>${{ customer.total_spent|floatformat:2 }}</strong></td>
                 </tr>

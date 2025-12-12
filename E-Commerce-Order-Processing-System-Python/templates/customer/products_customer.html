@@ -70,9 +70,9 @@
                 </svg>
             </div>
             {% endif %}
-            {% if product.stock <= 5 and product.stock > 0 %}
-            <span class="product-badge low-stock">Only {{ product.stock }} left!</span>
-            {% elif product.stock == 0 %}
+            {% if product.stock_quantity <= 5 and product.stock_quantity > 0 %}
+            <span class="product-badge low-stock">Only {{ product.stock_quantity }} left!</span>
+            {% elif product.stock_quantity == 0 %}
             <span class="product-badge out-of-stock">Out of Stock</span>
             {% endif %}
         </div>
@@ -82,14 +82,14 @@
             <p class="product-description">{{ product.description|truncatewords:15 }}</p>
             <div class="product-footer">
                 <span class="product-price">${{ product.price|floatformat:2 }}</span>
-                {% if product.stock > 0 %}
+                {% if product.stock_quantity > 0 %}
                 <button class="btn btn-sm btn-primary add-to-cart-btn" data-product-id="{{ product.id }}">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="9" cy="21" r="1"></circle>
                         <circle cx="20" cy="21" r="1"></circle>
                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                     </svg>
-                    Add
+                    Add to Cart
                 </button>
                 {% else %}
                 <button class="btn btn-sm" disabled>Out of Stock</button>
@@ -108,28 +108,27 @@
     {% endfor %}
 </div>
 
-<!-- Load More / Pagination -->
-{% if has_more %}
-<div class="load-more-container" id="load-more-container">
-    <button class="btn btn-primary" id="load-more-btn" data-page="{{ next_page }}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-        Load More Products
-    </button>
-</div>
-{% endif %}
-
-<!-- Loading Spinner -->
-<div class="loading-spinner" id="loading-spinner" style="display: none;">
+<!-- Infinite Scroll Status -->
+<div class="infinite-scroll-status" id="infinite-scroll-status" style="display: none;" data-has-more="{{ has_more|yesno:'true,false' }}" data-next-page="{{ next_page|default:'' }}">
     <div class="spinner"></div>
     <span>Loading more products...</span>
+</div>
+
+<!-- End of Products Message -->
+<div class="end-of-products" id="end-of-products" style="display: none;">
+    <p>You've seen all products!</p>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Track loaded product IDs to prevent duplicates
+    const loadedProductIds = new Set();
+    document.querySelectorAll('.product-card[data-product-id]').forEach(card => {
+        loadedProductIds.add(parseInt(card.dataset.productId));
+    });
+
     // Add to Cart functionality
     document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -137,27 +136,82 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Infinite scroll / Load more
-    const loadMoreBtn = document.getElementById('load-more-btn');
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', function() {
-            loadMoreProducts(this.dataset.page);
-        });
+    // Infinite scroll variables
+    let isLoading = false;
+    let hasMore = document.getElementById('infinite-scroll-status')?.dataset.hasMore === 'true';
+    let nextPage = document.getElementById('infinite-scroll-status')?.dataset.nextPage;
 
-        // Optional: Infinite scroll
-        let isLoading = false;
-        window.addEventListener('scroll', function() {
-            if (isLoading) return;
-            
-            const loadMoreContainer = document.getElementById('load-more-container');
-            if (!loadMoreContainer) return;
+    // Show end message if no more products on initial load
+    if (!hasMore && document.querySelectorAll('.product-card').length > 0) {
+        document.getElementById('end-of-products').style.display = 'block';
+    }
 
-            const rect = loadMoreContainer.getBoundingClientRect();
-            if (rect.top < window.innerHeight + 200) {
-                isLoading = true;
-                loadMoreProducts(loadMoreBtn.dataset.page);
-            }
-        });
+    // Infinite scroll implementation
+    window.addEventListener('scroll', function() {
+        if (isLoading || !hasMore) return;
+        
+        const scrollPosition = window.innerHeight + window.scrollY;
+        const documentHeight = document.documentElement.scrollHeight;
+        
+        // Load more when user is within 200px of bottom
+        if (scrollPosition >= documentHeight - 200) {
+            isLoading = true;
+            loadMoreProducts(nextPage);
+        }
+    });
+
+    function loadMoreProducts(page) {
+        if (!page) return;
+        
+        const statusEl = document.getElementById('infinite-scroll-status');
+        const endEl = document.getElementById('end-of-products');
+        
+        statusEl.style.display = 'block';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('page', page);
+        urlParams.set('ajax', '1');
+
+        fetch('{% url "products" %}?' + urlParams.toString())
+            .then(response => response.json())
+            .then(data => {
+                const grid = document.getElementById('products-grid');
+                
+                // Append new products (filter duplicates)
+                data.products.forEach(product => {
+                    if (!loadedProductIds.has(product.id)) {
+                        loadedProductIds.add(product.id);
+                        grid.insertAdjacentHTML('beforeend', createProductCard(product));
+                    }
+                });
+
+                // Re-attach event listeners to new buttons
+                grid.querySelectorAll('.add-to-cart-btn:not([data-attached])').forEach(btn => {
+                    btn.setAttribute('data-attached', 'true');
+                    btn.addEventListener('click', function() {
+                        addToCart(this.dataset.productId, this);
+                    });
+                });
+
+                // Update state
+                hasMore = data.has_more;
+                nextPage = data.next_page;
+                statusEl.dataset.hasMore = hasMore ? 'true' : 'false';
+                statusEl.dataset.nextPage = nextPage || '';
+                
+                statusEl.style.display = 'none';
+                
+                if (!hasMore) {
+                    endEl.style.display = 'block';
+                }
+                
+                isLoading = false;
+            })
+            .catch(error => {
+                statusEl.style.display = 'none';
+                showToast('Failed to load more products', 'error');
+                isLoading = false;
+            });
     }
 });
 
@@ -210,55 +264,6 @@ function addToCart(productId, button) {
     });
 }
 
-function loadMoreProducts(page) {
-    const loadMoreBtn = document.getElementById('load-more-btn');
-    const loadingSpinner = document.getElementById('loading-spinner');
-    const loadMoreContainer = document.getElementById('load-more-container');
-
-    if (loadMoreBtn) loadMoreBtn.style.display = 'none';
-    if (loadingSpinner) loadingSpinner.style.display = 'flex';
-
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set('page', page);
-    urlParams.set('ajax', '1');
-
-    fetch('{% url "products" %}?' + urlParams.toString())
-        .then(response => response.json())
-        .then(data => {
-            const grid = document.getElementById('products-grid');
-            
-            // Append new products
-            data.products.forEach(product => {
-                grid.insertAdjacentHTML('beforeend', createProductCard(product));
-            });
-
-            // Re-attach event listeners to new buttons
-            grid.querySelectorAll('.add-to-cart-btn:not([data-attached])').forEach(btn => {
-                btn.setAttribute('data-attached', 'true');
-                btn.addEventListener('click', function() {
-                    addToCart(this.dataset.productId, this);
-                });
-            });
-
-            // Update load more button
-            if (data.has_more) {
-                loadMoreBtn.dataset.page = data.next_page;
-                loadMoreBtn.style.display = 'inline-flex';
-            } else {
-                loadMoreContainer.remove();
-            }
-
-            loadingSpinner.style.display = 'none';
-            isLoading = false;
-        })
-        .catch(error => {
-            loadingSpinner.style.display = 'none';
-            loadMoreBtn.style.display = 'inline-flex';
-            showToast('Failed to load more products', 'error');
-            isLoading = false;
-        });
-}
-
 function createProductCard(product) {
     const stockBadge = product.stock <= 5 && product.stock > 0 
         ? `<span class="product-badge low-stock">Only ${product.stock} left!</span>`
@@ -273,7 +278,7 @@ function createProductCard(product) {
                 <circle cx="20" cy="21" r="1"></circle>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
             </svg>
-            Add
+            Add to Cart
            </button>`
         : `<button class="btn btn-sm" disabled>Out of Stock</button>`;
 

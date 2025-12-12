@@ -248,6 +248,30 @@ def products(request):
     end = start + per_page
     products_page = products_list[start:end]
     total_pages = (total + per_page - 1) // per_page
+    has_more = end < total
+    next_page = page + 1 if has_more else None
+
+    # Handle AJAX request for infinite scroll
+    if request.GET.get('ajax') == '1' and role == 'customer':
+        products_data = []
+        for p in products_page:
+            products_data.append({
+                'id': p.id,
+                'name': p.name,
+                'description': p.description[:100] + '...' if len(p.description) > 100 else p.description,
+                'category': p.category,
+                'price': float(p.price),
+                'stock': p.stock_quantity,
+                'image_url': p.image_url or '',
+            })
+        return JsonResponse({
+            'products': products_data,
+            'has_more': has_more,
+            'next_page': next_page,
+        })
+
+    # Generate page range for pagination (admin only)
+    page_range = range(1, total_pages + 1)
 
     context = {
         'products': products_page,
@@ -255,6 +279,10 @@ def products(request):
         'sort': sort,
         'page': page,
         'total_pages': total_pages,
+        'total_products': total,
+        'page_range': page_range,
+        'has_more': has_more,
+        'next_page': next_page,
         'role': role,
     }
 

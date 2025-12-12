@@ -43,7 +43,7 @@
                     </div>
                     <div class="form-group">
                         <label for="stock">Stock Quantity <span class="required">*</span></label>
-                        <input type="number" id="stock" name="stock" min="0" value="{{ product.stock }}" required>
+                        <input type="number" id="stock" name="stock" min="0" value="{{ product.stock_quantity }}" required>
                     </div>
                 </div>
 
@@ -221,11 +221,73 @@
     </table>
 </div>
 {% endif %}
+
+<!-- Update Confirmation Modal -->
+<div class="modal" id="update-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h2>Update Product</h2>
+            <button class="modal-close" id="modal-close">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to update this product?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" id="cancel-update">Cancel</button>
+            <button class="btn btn-primary" id="confirm-update">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Yes, Update
+            </button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Update confirmation modal
+    const form = document.getElementById('product-form');
+    const modal = document.getElementById('update-modal');
+    const modalClose = document.getElementById('modal-close');
+    const cancelUpdate = document.getElementById('cancel-update');
+    const confirmUpdate = document.getElementById('confirm-update');
+    let formSubmitting = false;
+
+    function closeModal() {
+        modal.classList.remove('show');
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    cancelUpdate.addEventListener('click', closeModal);
+    document.querySelector('#update-modal .modal-backdrop').addEventListener('click', closeModal);
+
+    form.addEventListener('submit', function(e) {
+        if (!formSubmitting) {
+            e.preventDefault();
+            modal.classList.add('show');
+        }
+    });
+
+    confirmUpdate.addEventListener('click', function() {
+        formSubmitting = true;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-small"></span> Saving...';
+        closeModal();
+        form.submit();
+    });
+
     // Category selection
     const categorySelect = document.getElementById('category');
     const newCategoryGroup = document.getElementById('new-category-group');
@@ -324,14 +386,6 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             reader.readAsDataURL(file);
         }
-    });
-
-    // Form submission
-    const form = document.getElementById('product-form');
-    form.addEventListener('submit', function(e) {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-small"></span> Saving...';
     });
 });
 </script>
