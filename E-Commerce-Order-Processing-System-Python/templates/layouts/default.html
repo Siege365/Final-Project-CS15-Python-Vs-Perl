@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/main.css?v=20251213-004">
     <link rel="icon" type="image/svg+xml" href="/static/images/logo.svg">
     {% block extra_css %}{% endblock %}
 </head>
@@ -50,7 +50,7 @@
                     <a href="{% url 'cart' %}" class="nav-link {% if '/cart' in request.path %}active{% endif %}">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                         <span>Cart</span>
-                        {% if cart_count > 0 %}<span class="nav-badge">{{ cart_count }}</span>{% endif %}
+                        <span class="nav-badge" id="nav-cart-badge" {% if cart_count == 0 %}style="display: none;"{% endif %}>{{ cart_count }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -106,10 +106,10 @@
                 {% endif %}
             </div>
         </header>
+        <!-- Toast Container for notifications - MUST be outside page-content for proper z-index -->
+        <div id="toast-container" class="toast-container"></div>
         <div class="page-content animate-fade-in">
             {% if messages %}<div class="alerts-container">{% for message in messages %}<div class="alert alert-{{ message.tags }}"><span>{{ message }}</span><button type="button" class="alert-close" onclick="this.parentElement.remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>{% endfor %}</div>{% endif %}
-            <!-- Toast Container for notifications -->
-            <div id="toast-container" class="toast-container"></div>
             {% block content %}{% endblock %}
         </div>
         <footer class="main-footer">
@@ -196,17 +196,19 @@
             
             container.appendChild(toast);
             
-            // Auto remove after 4 seconds
+            // Wait for slide-in animation (0.8s) + display time (8s) + slide-out animation (0.8s)
             setTimeout(() => {
                 toast.classList.add('toast-exit');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
+                setTimeout(() => toast.remove(), 800);
+            }, 8800);
         }
         
         // Update cart badge
         function updateCartBadge(count) {
+            // Update topbar badge
             const badge = document.getElementById('cart-badge');
-            const navBadge = document.querySelector('.nav-badge');
+            // Update sidebar nav badge
+            const navBadge = document.getElementById('nav-cart-badge');
             
             if (badge) {
                 badge.textContent = count;
@@ -220,7 +222,7 @@
             
             if (navBadge) {
                 navBadge.textContent = count;
-                navBadge.style.display = count > 0 ? 'flex' : 'none';
+                navBadge.style.display = count > 0 ? 'inline-flex' : 'none';
             }
         }
         

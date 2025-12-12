@@ -138,9 +138,8 @@
                     <th>Customer</th>
                     <th>Items</th>
                     <th>Total</th>
-                    <th>Status</th>
                     <th>Date</th>
-                    <th style="width: 120px;">Actions</th>
+                    <th style="width: 80px; text-align: center;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -162,23 +161,40 @@
                     </td>
                     <td>{{ order.items.count }} item{% if order.items.count != 1 %}s{% endif %}</td>
                     <td><strong>${{ order.total|floatformat:2 }}</strong></td>
-                    <td>
-                        <select class="status-select status {{ order.status }}" data-order-id="{{ order.id }}" data-original="{{ order.status }}">
-                            <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
-                            <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>Processing</option>
-                            <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Shipped</option>
-                            <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
-                            <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
-                        </select>
-                    </td>
                     <td>{{ order.created_at|date:"M j, Y" }}</td>
-                    <td>
-                        <a href="{% url 'admin_order_detail' order.id %}" class="btn btn-sm" title="View Details">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                        </a>
+                    <td style="text-align: center;">
+                        <div class="kebab-menu">
+                            <button class="kebab-btn" title="Actions">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="5" r="1"></circle>
+                                    <circle cx="12" cy="12" r="1"></circle>
+                                    <circle cx="12" cy="19" r="1"></circle>
+                                </svg>
+                            </button>
+                            <div class="kebab-dropdown">
+                                <a href="{% url 'admin_order_detail' order.id %}" class="kebab-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    View Order
+                                </a>
+                                <button class="kebab-item status-change-btn" data-order-id="{{ order.id }}" data-current-status="{{ order.status }}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                    </svg>
+                                    Update Status <span class="status-badge-mini {{ order.status }}">{{ order.status|title }}</span>
+                                </button>
+                                <button class="kebab-item danger delete-order-btn" data-order-id="{{ order.id }}" data-order-number="{{ order.order_number }}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    Delete Order
+                                </button>
+                            </div>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -220,142 +236,63 @@
     </div>
     {% endif %}
 </div>
+
+<!-- Status Change Modal -->
+<div class="modal" id="status-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Update Order Status</h3>
+            <button class="modal-close" id="status-modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Change status for order <strong id="status-order-number"></strong></p>
+            <div style="margin-top: 1rem;">
+                <label for="new-status">New Status</label>
+                <select id="new-status" class="form-control">
+                    <option value="pending">Pending</option>
+                    <option value="processing">Processing</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" id="status-cancel">Cancel</button>
+            <button class="btn btn-primary" id="status-confirm">Update Status</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Order Modal -->
+<div class="modal" id="delete-order-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Delete Order</h3>
+            <button class="modal-close" id="delete-order-modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete order <strong id="delete-order-number"></strong>?</p>
+            <p class="text-error">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" id="delete-order-cancel">Cancel</button>
+            <button class="btn btn-danger" id="delete-order-confirm">Delete Order</button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const selectAll = document.getElementById('select-all');
-    const checkboxes = document.querySelectorAll('.order-checkbox');
-    const bulkActions = document.getElementById('bulk-actions');
-
-    // Select all functionality
-    selectAll.addEventListener('change', function() {
-        checkboxes.forEach(cb => cb.checked = this.checked);
-        updateBulkActions();
-    });
-
-    checkboxes.forEach(cb => {
-        cb.addEventListener('change', updateBulkActions);
-    });
-
-    function updateBulkActions() {
-        const checked = document.querySelectorAll('.order-checkbox:checked');
-        bulkActions.style.display = checked.length > 0 ? 'flex' : 'none';
-    }
-
-    // Bulk action
-    document.getElementById('apply-bulk-action').addEventListener('click', function() {
-        const action = document.getElementById('bulk-action').value;
-        if (!action) {
-            alert('Please select an action');
-            return;
-        }
-
-        const selectedOrders = Array.from(document.querySelectorAll('.order-checkbox:checked'))
-            .map(cb => cb.value);
-
-        if (selectedOrders.length === 0) {
-            alert('Please select at least one order');
-            return;
-        }
-
-        if (action === 'cancelled' && !confirm('Are you sure you want to cancel the selected orders?')) {
-            return;
-        }
-
-        this.disabled = true;
-        this.innerHTML = '<span class="spinner-small"></span>';
-
-        fetch('{% url "api_order_bulk_update" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                order_ids: selectedOrders,
-                status: action
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert(data.message || 'Failed to update orders');
-                this.disabled = false;
-                this.innerHTML = 'Apply';
-            }
-        })
-        .catch(() => {
-            alert('An error occurred');
-            this.disabled = false;
-            this.innerHTML = 'Apply';
-        });
-    });
-
-    // Individual status change
-    document.querySelectorAll('.status-select').forEach(select => {
-        select.addEventListener('change', function() {
-            const orderId = this.dataset.orderId;
-            const newStatus = this.value;
-            const originalStatus = this.dataset.original;
-
-            // Update visual class
-            this.className = 'status-select status ' + newStatus;
-
-            fetch('{% url "api_order_update_status" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    status: newStatus
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    this.dataset.original = newStatus;
-                    showToast('Order status updated', 'success');
-                } else {
-                    this.value = originalStatus;
-                    this.className = 'status-select status ' + originalStatus;
-                    showToast(data.message || 'Failed to update status', 'error');
-                }
-            })
-            .catch(() => {
-                this.value = originalStatus;
-                this.className = 'status-select status ' + originalStatus;
-                showToast('An error occurred', 'error');
-            });
-        });
-    });
-});
-
-function showToast(message, type) {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            ${type === 'success' 
-                ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>'
-                : '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'
-            }
-        </svg>
-        <span>${message}</span>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
+window.orderUrls = {
+    bulkUpdate: '{% url "api_order_bulk_update" %}',
+    updateStatus: '{% url "api_order_update_status" %}',
+    deleteOrder: '{% url "admin_order_delete" 0 %}'.replace('/0/', '/')
+};
+window.csrfToken = '{{ csrf_token }}';
 </script>
+<script src="/static/js/admin/orders-list.js?v=20251212-001"></script>
 {% endblock %}

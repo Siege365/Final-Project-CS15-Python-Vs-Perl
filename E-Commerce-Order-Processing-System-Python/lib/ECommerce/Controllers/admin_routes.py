@@ -9,8 +9,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 from django.db import models
 from functools import wraps
+import json
 
 from lib.ECommerce.Models.Product import Product
 from lib.ECommerce.Models.Order import Order
@@ -37,7 +39,8 @@ def admin_required(view_func):
 @admin_required
 def product_add(request):
     """Show add product form."""
-    categories = PRODUCT_CATEGORIES
+    # Extract category values from tuples
+    categories = [cat[0] for cat in PRODUCT_CATEGORIES]
     return render(request, 'admin/product_add.html', {
         'categories': categories,
         'role': request.user.role,
@@ -86,7 +89,8 @@ def product_add_submit(request):
 def product_edit(request, product_id):
     """Show edit product form."""
     product = get_object_or_404(Product, id=product_id)
-    categories = PRODUCT_CATEGORIES
+    # Extract category values from tuples
+    categories = [cat[0] for cat in PRODUCT_CATEGORIES]
 
     return render(request, 'admin/product_edit.html', {
         'product': product,
@@ -138,6 +142,53 @@ def product_delete(request, product_id):
     return redirect('products')
 
 
+@admin_required
+@require_POST
+def product_adjust_stock(request, product_id):
+    """Handle quick stock adjustment."""
+    product = get_object_or_404(Product, id=product_id)
+    
+    adjustment_type = request.POST.get('adjustment_type', 'set')
+    quantity = request.POST.get('quantity', 0)
+    
+    try:
+        quantity = int(quantity)
+        if quantity < 0:
+            messages.error(request, 'Quantity cannot be negative')
+            return redirect('products')
+        
+        old_stock = product.stock_quantity
+        
+        if adjustment_type == 'add':
+            product.stock_quantity += quantity
+        elif adjustment_type == 'remove':
+            product.stock_quantity = max(0, product.stock_quantity - quantity)
+        elif adjustment_type == 'set':
+            product.stock_quantity = quantity
+        else:
+            messages.error(request, 'Invalid adjustment type')
+            return redirect('products')
+        
+        product.save()
+        
+        # Create a meaningful success message
+        if adjustment_type == 'add':
+            messages.success(request, f'Added {quantity} units to {product.name}. Stock: {old_stock} → {product.stock_quantity}')
+        elif adjustment_type == 'remove':
+            messages.success(request, f'Removed {quantity} units from {product.name}. Stock: {old_stock} → {product.stock_quantity}')
+        else:
+            messages.success(request, f'Set stock for {product.name} to {product.stock_quantity}')
+        
+        return redirect('products')
+        
+    except ValueError:
+        messages.error(request, 'Invalid quantity value')
+        return redirect('products')
+    except Exception as e:
+        messages.error(request, f'Failed to adjust stock: {str(e)}')
+        return redirect('products')
+
+
 # =============================================================================
 # ORDER MANAGEMENT
 # =============================================================================
@@ -155,6 +206,65 @@ def order_update_status(request, order_id):
         messages.success(request, f'Order status updated to {new_status}')
 
     return redirect('order_detail', order_id=order_id)
+
+
+@admin_required
+@require_POST
+def api_order_update_status(request):
+    """API endpoint to update order status (returns JSON)."""
+    try:
+        data = json.loads(request.body)
+        order_id = data.get('order_id')
+        new_status = data.get('status')
+        
+        if not order_id or not new_status:
+            return JsonResponse({
+                'success': False,
+                'message': 'Order ID and status are required'
+            }, status=400)
+        
+        order = get_object_or_404(Order, id=order_id)
+        order.status = new_status
+        order.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Order status updated to {new_status}'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=500)
+
+
+@admin_required
+@require_POST
+def api_order_bulk_update(request):
+    """API endpoint to bulk update order statuses (returns JSON)."""
+    try:
+        data = json.loads(request.body)
+        order_ids = data.get('order_ids', [])
+        new_status = data.get('status')
+        
+        if not order_ids or not new_status:
+            return JsonResponse({
+                'success': False,
+                'message': 'Order IDs and status are required'
+            }, status=400)
+        
+        updated_count = Order.objects.filter(id__in=order_ids).update(status=new_status)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{updated_count} order(s) updated to {new_status}',
+            'count': updated_count
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=500)
 
 
 @admin_required
@@ -441,12 +551,18 @@ urlpatterns = [
     path('products/<int:product_id>/edit/submit/', product_edit_submit, name='product_edit_submit'),
     path('products/<int:product_id>/delete/', product_delete, name='admin_product_delete'),
     path('products/<int:product_id>/delete/', product_delete, name='product_delete'),
+    path('products/<int:product_id>/adjust-stock/', product_adjust_stock, name='admin_product_adjust_stock'),
+    path('products/<int:product_id>/adjust-stock/', product_adjust_stock, name='product_adjust_stock'),
 
     # Orders - Admin
     path('orders/<int:order_id>/update-status/', order_update_status, name='admin_order_update_status'),
     path('orders/<int:order_id>/update-status/', order_update_status, name='order_update_status'),
     path('orders/<int:order_id>/delete/', order_delete, name='admin_order_delete'),
     path('orders/<int:order_id>/delete/', order_delete, name='order_delete'),
+    
+    # Order API endpoints
+    path('api/orders/update-status/', api_order_update_status, name='api_order_update_status'),
+    path('api/orders/bulk-update/', api_order_bulk_update, name='api_order_bulk_update'),
 
     # Customers - Admin
     path('customers/', customers, name='admin_customers'),

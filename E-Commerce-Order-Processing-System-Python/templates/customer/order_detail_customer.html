@@ -94,7 +94,7 @@
         <div class="card">
             <div class="card-header">
                 <h2>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                     </svg>
                     Order Items
@@ -179,7 +179,7 @@
         <!-- Shipping Address -->
         <div class="card">
             <h2>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                     <circle cx="12" cy="10" r="3"></circle>
                 </svg>
@@ -192,16 +192,16 @@
 
         <!-- Actions -->
         <div class="order-actions">
-            <a href="{% url 'orders' %}" class="btn btn-block">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <a href="{% url 'orders' %}" class="btn btn-secondary btn-block">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
                 Back to Orders
             </a>
             {% if order.status == 'pending' %}
-            <button class="btn btn-danger btn-block" id="cancel-order-btn" data-order-id="{{ order.id }}">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="btn btn-danger btn-block" id="cancel-order-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="15" y1="9" x2="9" y2="15"></line>
                     <line x1="9" y1="9" x2="15" y2="15"></line>
@@ -212,46 +212,51 @@
         </div>
     </div>
 </div>
+
+<!-- Cancel Order Modal -->
+{% if order.status == 'pending' %}
+<div id="cancel-order-modal" class="cancel-modal">
+    <div class="cancel-modal-backdrop"></div>
+    <div class="cancel-modal-content">
+        <div class="cancel-modal-header">
+            <div class="cancel-modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+            </div>
+            <h3 class="cancel-modal-title">Cancel Order?</h3>
+        </div>
+        <div class="cancel-modal-body">
+            <p>Are you sure you want to cancel order <strong>{{ order.order_number }}</strong>?</p>
+            <p>This action cannot be undone. You will need to place a new order if you change your mind.</p>
+        </div>
+        <div class="cancel-modal-footer">
+            <button type="button" class="btn btn-secondary" id="modal-cancel-btn">
+                No, Keep Order
+            </button>
+            <button type="button" class="btn btn-danger" id="modal-confirm-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                Yes, Cancel Order
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const cancelBtn = document.getElementById('cancel-order-btn');
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', function() {
-            if (!confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
-                return;
-            }
-
-            const orderId = this.dataset.orderId;
-            this.disabled = true;
-            this.innerHTML = '<span class="spinner-small"></span> Cancelling...';
-
-            fetch('{% url "api_order_cancel" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ order_id: orderId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert(data.message || 'Failed to cancel order');
-                    this.disabled = false;
-                    this.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Cancel Order';
-                }
-            })
-            .catch(() => {
-                alert('An error occurred');
-                this.disabled = false;
-            });
-        });
-    }
-});
+window.orderUrls = {
+    cancelOrder: '{% url "api_order_cancel" %}'
+};
+window.orderId = {{ order.id }};
+window.csrfToken = '{{ csrf_token }}';
 </script>
+<script src="/static/js/customer/order-detail.js?v=20251212-007"></script>
 {% endblock %}

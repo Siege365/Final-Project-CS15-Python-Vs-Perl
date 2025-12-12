@@ -13,3 +13,4 @@ requires 'Digest::SHA', '>= 6.0';
 requires 'MIME::Base64';
 requires 'Data::Dumper';
 requires 'List::Util', '>= 1.50';
+requires 'Dotenv';

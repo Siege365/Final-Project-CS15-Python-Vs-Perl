@@ -266,121 +266,16 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Date range toggle
-    const periodSelect = document.getElementById('period');
-    const dateFromGroup = document.getElementById('date-from-group');
-    const dateToGroup = document.getElementById('date-to-group');
-
-    periodSelect.addEventListener('change', function() {
-        if (this.value === 'custom') {
-            dateFromGroup.style.display = 'block';
-            dateToGroup.style.display = 'block';
-        } else {
-            dateFromGroup.style.display = 'none';
-            dateToGroup.style.display = 'none';
-        }
-    });
-
-    // Revenue Chart
-    const revenueCtx = document.getElementById('revenue-chart');
-    if (revenueCtx) {
-        new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: {{ chart_data.revenue_labels|safe }},
-                datasets: [{
-                    label: 'Revenue',
-                    data: {{ chart_data.revenue_data|safe }},
-                    borderColor: 'rgb(99, 102, 241)',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    // Category Chart
-    const categoryCtx = document.getElementById('category-chart');
-    if (categoryCtx) {
-        new Chart(categoryCtx, {
-            type: 'doughnut',
-            data: {
-                labels: {{ chart_data.category_labels|safe }},
-                datasets: [{
-                    data: {{ chart_data.category_data|safe }},
-                    backgroundColor: [
-                        'rgb(99, 102, 241)',
-                        'rgb(34, 197, 94)',
-                        'rgb(245, 158, 11)',
-                        'rgb(239, 68, 68)',
-                        'rgb(139, 92, 246)',
-                        'rgb(59, 130, 246)'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-
-    // Status Chart
-    const statusCtx = document.getElementById('status-chart');
-    if (statusCtx) {
-        new Chart(statusCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-                datasets: [{
-                    data: {{ chart_data.status_data|safe }},
-                    backgroundColor: [
-                        'rgb(245, 158, 11)',
-                        'rgb(59, 130, 246)',
-                        'rgb(139, 92, 246)',
-                        'rgb(34, 197, 94)',
-                        'rgb(239, 68, 68)'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-});
+window.chartData = {
+    revenueLabels: {{ chart_data.revenue_labels|safe }},
+    revenueData: {{ chart_data.revenue_data|safe }},
+    categoryLabels: {{ chart_data.category_labels|safe }},
+    categoryData: {{ chart_data.category_data|safe }},
+    statusData: {{ chart_data.status_data|safe }}
+};
 </script>
+<script src="/static/js/admin/reports.js?v=20251212-002"></script>
 {% endblock %}

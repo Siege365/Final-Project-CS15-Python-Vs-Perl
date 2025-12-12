@@ -179,6 +179,7 @@ python manage.py migrate
 ## 📚 Documentation Files
 
 - **docs-MUST-READ.md** - Complete project documentation
+- **docs/docs-MUST-READ.md** - Complete project documentation (moved to `docs/`)
 - **README.md** - This file
 - **requirements.txt** - Python dependencies
 

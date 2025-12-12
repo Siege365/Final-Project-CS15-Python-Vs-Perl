@@ -1,133 +1,206 @@
-/* Modal Styles */
-.modal {
+/* ============================================
+   Modal
+   ============================================ */
+.modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: var(--z-modal);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-4);
+    z-index: 2000;
     opacity: 0;
     visibility: hidden;
     transition: all var(--transition-normal);
 }
 
-.modal.show {
+.modal-overlay.show {
     opacity: 1;
     visibility: visible;
 }
 
-.modal-backdrop {
+/* Modal - hidden by default */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal .modal-backdrop {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: var(--z-modal-backdrop);
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
 }
 
-.modal-content {
+.modal .modal-content {
     position: relative;
-    z-index: var(--z-modal);
-    background-color: var(--white);
+    background: var(--white);
     border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-xl);
     width: 100%;
-    max-width: 560px;
+    max-width: 500px;
     max-height: 90vh;
-    overflow: auto;
-    transform: scale(0.95) translateY(10px);
-    transition: transform var(--transition-normal);
+    overflow: hidden;
+    transform: translateY(20px);
+    animation: modalSlideIn 0.3s ease forwards;
+    z-index: 1;
 }
 
 .modal.show .modal-content {
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
 }
 
-.modal-content.modal-sm {
+.modal-sm .modal-content,
+.modal .modal-content.modal-sm {
     max-width: 400px;
 }
 
-.modal-content.modal-lg {
-    max-width: 800px;
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-5) var(--space-6);
-    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--gray-100);
 }
 
-.modal-header h2 {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
-    margin: 0;
-}
-
-.modal-header h2 svg {
-    color: var(--primary-color);
+.modal-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
 }
 
 .modal-close {
-    padding: var(--space-2);
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: color var(--transition-fast);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: var(--radius-md);
+    color: var(--gray-500);
+    transition: all var(--transition-fast);
 }
 
 .modal-close:hover {
-    color: var(--text-primary);
-    background-color: var(--gray-100);
+    background: var(--gray-100);
+    color: var(--gray-700);
 }
 
 .modal-body {
-    padding: var(--space-6);
+    padding: 1.5rem;
+    overflow-y: auto;
 }
 
 .modal-footer {
     display: flex;
     justify-content: flex-end;
-    gap: var(--space-3);
-    padding: var(--space-4) var(--space-6);
-    border-top: 1px solid var(--border-color);
-    background-color: var(--gray-50);
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--gray-100);
 }
 
-/* Warning Text in Modals */
-.warning-text {
-    color: var(--text-muted);
-    font-size: var(--font-size-sm);
-    margin-top: var(--space-2);
+/* Confirmation Modal */
+.modal .warning-text {
+    color: var(--error);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
 }
 
-/* Order Summary Mini (in checkout modal) */
-.order-summary-mini {
-    background-color: var(--gray-50);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-    margin: var(--space-4) 0;
+/* Export Modal */
+.export-modal-content {
+    padding: 1.5rem;
 }
 
-.order-summary-mini .summary-row {
+.export-modal-content .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.export-modal-content .radio-group {
     display: flex;
-    justify-content: space-between;
-    padding: var(--space-2) 0;
-    font-size: var(--font-size-sm);
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-.order-summary-mini .summary-row.total {
-    border-top: 1px solid var(--border-color);
-    margin-top: var(--space-2);
-    padding-top: var(--space-3);
-    font-weight: var(--font-weight-semibold);
+.export-modal-content .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.export-modal-content .radio-option:hover {
+    border-color: var(--primary);
+    background: var(--gray-50);
+}
+
+.export-modal-content .radio-option.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.export-modal-content .format-options {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.export-modal-content .format-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.export-modal-content .format-btn:hover {
+    border-color: var(--primary);
+}
+
+.export-modal-content .format-btn.selected {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+}
+
+.export-modal-content .format-btn svg {
+    display: block;
+    margin: 0 auto 0.5rem;
+}
+
+/* Export Options */
+.export-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1.25rem;
 }

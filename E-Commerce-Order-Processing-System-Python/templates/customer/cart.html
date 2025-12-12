@@ -32,10 +32,10 @@
             
             <div class="cart-items" id="cart-items">
                 {% for item in cart_items %}
-                <div class="cart-item" data-product-id="{{ item.product.id }}">
+                <div class="cart-item" data-product-id="{{ item.product_id }}">
                     <div class="cart-item-image">
-                        {% if item.product.image_url %}
-                        <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}" alt="{{ item.name }}">
                         {% else %}
                         <div class="product-placeholder">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -47,18 +47,17 @@
                         {% endif %}
                     </div>
                     <div class="cart-item-details">
-                        <h3 class="cart-item-name">{{ item.product.name }}</h3>
-                        <p class="cart-item-category">{{ item.product.category }}</p>
-                        <p class="cart-item-price">${{ item.product.price|floatformat:2 }} each</p>
+                        <h3 class="cart-item-name">{{ item.name }}</h3>
+                        <p class="cart-item-price">${{ item.price|floatformat:2 }} each</p>
                     </div>
                     <div class="cart-item-quantity">
-                        <button class="quantity-btn minus" data-product-id="{{ item.product.id }}">
+                        <button class="quantity-btn minus" data-product-id="{{ item.product_id }}">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
                         </button>
-                        <input type="number" class="quantity-input" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" data-product-id="{{ item.product.id }}">
-                        <button class="quantity-btn plus" data-product-id="{{ item.product.id }}">
+                        <input type="number" class="quantity-input" value="{{ item.quantity }}" min="1" data-product-id="{{ item.product_id }}">
+                        <button class="quantity-btn plus" data-product-id="{{ item.product_id }}">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -68,7 +67,7 @@
                     <div class="cart-item-subtotal">
                         $<span class="item-subtotal">{{ item.subtotal|floatformat:2 }}</span>
                     </div>
-                    <button class="cart-item-remove" data-product-id="{{ item.product.id }}">
+                    <button class="cart-item-remove" data-product-id="{{ item.product_id }}">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -80,95 +79,17 @@
         </div>
     </div>
 
-    <!-- Order Summary -->
+    <!-- Checkout Section -->
     <div class="cart-summary-container">
-        <div class="card cart-summary">
-            <h2>Order Summary</h2>
-            
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <span id="cart-subtotal">${{ cart_subtotal|floatformat:2 }}</span>
-            </div>
-            
-            <div class="summary-row">
-                <span>Tax ({{ tax_rate|floatformat:0 }}%)</span>
-                <span id="cart-tax">${{ cart_tax|floatformat:2 }}</span>
-            </div>
-            
-            <div class="summary-row">
-                <span>Shipping</span>
-                <span id="cart-shipping">
-                    {% if cart_subtotal >= free_shipping_threshold %}
-                    <span class="free-shipping">FREE</span>
-                    {% else %}
-                    ${{ shipping_rate|floatformat:2 }}
-                    {% endif %}
-                </span>
-            </div>
-
-            {% if cart_subtotal < free_shipping_threshold %}
-            <div class="free-shipping-notice">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="1" y="3" width="15" height="13"></rect>
-                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                </svg>
-                Add ${{ remaining_for_free_shipping|floatformat:2 }} more for FREE shipping!
-            </div>
-            {% endif %}
-            
-            <div class="summary-row total">
-                <span>Total</span>
-                <span id="cart-total">${{ cart_total|floatformat:2 }}</span>
-            </div>
-
-            <button class="btn btn-primary btn-block" id="checkout-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                    <line x1="1" y1="10" x2="23" y2="10"></line>
-                </svg>
-                Proceed to Checkout
-            </button>
-
-            <a href="{% url 'products' %}" class="btn btn-block" style="margin-top: 0.5rem;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                Continue Shopping
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- Checkout Modal -->
-<div class="modal" id="checkout-modal">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                    <line x1="1" y1="10" x2="23" y2="10"></line>
-                </svg>
-                Complete Your Order
-            </h2>
-            <button class="modal-close" id="modal-close">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
-        </div>
-        <div class="modal-body">
+        <!-- Checkout Form -->
+        <div class="card checkout-card">
+            <h2>Checkout</h2>
             <form id="checkout-form">
                 {% csrf_token %}
                 <div class="form-section">
                     <h3>Shipping Address</h3>
                     <div class="form-group">
-                        <label for="shipping_address">Address</label>
-                        <textarea id="shipping_address" name="shipping_address" rows="3" required>{{ customer.address|default:'' }}</textarea>
+                        <textarea id="shipping_address" name="shipping_address" rows="3" required placeholder="Enter your shipping address">{{ customer_address|default:'' }}</textarea>
                     </div>
                 </div>
 
@@ -206,33 +127,109 @@
                         </label>
                     </div>
                 </div>
+            </form>
+        </div>
 
-                <div class="order-summary-mini">
-                    <div class="summary-row">
-                        <span>Subtotal:</span>
-                        <span>${{ cart_subtotal|floatformat:2 }}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Tax:</span>
-                        <span>${{ cart_tax|floatformat:2 }}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Shipping:</span>
-                        <span>{% if cart_subtotal >= free_shipping_threshold %}FREE{% else %}${{ shipping_rate|floatformat:2 }}{% endif %}</span>
-                    </div>
-                    <div class="summary-row total">
-                        <span>Total:</span>
-                        <span>${{ cart_total|floatformat:2 }}</span>
-                    </div>
+        <!-- Order Summary -->
+        <div class="card cart-summary">
+            <h2>Order Summary</h2>
+            
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">${{ cart_subtotal|floatformat:2 }}</span>
+            </div>
+            
+            <div class="summary-row">
+                <span>Tax ({{ tax_rate|floatformat:0 }}%)</span>
+                <span id="cart-tax">${{ cart_tax|floatformat:2 }}</span>
+            </div>
+            
+            <div class="summary-row">
+                <span>Shipping</span>
+                <span id="cart-shipping">
+                    {% if cart_subtotal >= free_shipping_threshold %}
+                    <span class="free-shipping">FREE</span>
+                    {% else %}
+                    ${{ cart_shipping|floatformat:2 }}
+                    {% endif %}
+                </span>
+            </div>
+
+            {% if cart_subtotal < free_shipping_threshold %}
+            <div class="free-shipping-notice">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="3" width="15" height="13"></rect>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+                Add ${{ remaining_for_free_shipping|floatformat:2 }} more for FREE shipping!
+            </div>
+            {% endif %}
+            
+            <div class="summary-row total">
+                <span>Total</span>
+                <span id="cart-total">${{ cart_total|floatformat:2 }}</span>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-block" id="place-order-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Place Order
+            </button>
+
+            <a href="{% url 'products' %}" class="btn btn-block" style="margin-top: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal" id="confirm-order-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Confirm Order
+            </h2>
+            <button class="modal-close" id="confirm-modal-close">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 1.5rem;">Are you sure you want to place this order?</p>
+            <div class="order-summary-mini">
+                <div class="summary-row">
+                    <span>Total Amount:</span>
+                    <span class="total-amount">${{ cart_total|floatformat:2 }}</span>
                 </div>
-
-                <button type="submit" class="btn btn-primary btn-block" id="place-order-btn">
+                <div class="summary-row">
+                    <span>Payment Method:</span>
+                    <span id="confirm-payment-method">Credit Card</span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-block" id="cancel-order-btn">Cancel</button>
+                <button type="button" class="btn btn-primary btn-block" id="confirm-order-btn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    Place Order
+                    Confirm Order
                 </button>
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -257,243 +254,17 @@
 {% endif %}
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Quantity buttons
-    document.querySelectorAll('.quantity-btn.minus').forEach(btn => {
-        btn.addEventListener('click', () => updateQuantity(btn.dataset.productId, -1));
-    });
-
-    document.querySelectorAll('.quantity-btn.plus').forEach(btn => {
-        btn.addEventListener('click', () => updateQuantity(btn.dataset.productId, 1));
-    });
-
-    // Quantity input change
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', function() {
-            setQuantity(this.dataset.productId, parseInt(this.value));
-        });
-    });
-
-    // Remove buttons
-    document.querySelectorAll('.cart-item-remove').forEach(btn => {
-        btn.addEventListener('click', () => removeItem(btn.dataset.productId));
-    });
-
-    // Clear cart
-    const clearCartBtn = document.getElementById('clear-cart-btn');
-    if (clearCartBtn) {
-        clearCartBtn.addEventListener('click', clearCart);
-    }
-
-    // Checkout modal
-    const checkoutBtn = document.getElementById('checkout-btn');
-    const modal = document.getElementById('checkout-modal');
-    const modalClose = document.getElementById('modal-close');
-    const modalBackdrop = document.querySelector('.modal-backdrop');
-
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', () => modal.classList.add('show'));
-    }
-
-    if (modalClose) {
-        modalClose.addEventListener('click', () => modal.classList.remove('show'));
-    }
-
-    if (modalBackdrop) {
-        modalBackdrop.addEventListener('click', () => modal.classList.remove('show'));
-    }
-
-    // Checkout form
-    const checkoutForm = document.getElementById('checkout-form');
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', handleCheckout);
-    }
-});
-
-function updateQuantity(productId, delta) {
-    const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
-    const newQuantity = parseInt(input.value) + delta;
-    
-    if (newQuantity < 1) {
-        removeItem(productId);
-        return;
-    }
-
-    setQuantity(productId, newQuantity);
-}
-
-function setQuantity(productId, quantity) {
-    fetch('{% url "api_cart_update" %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({
-            product_id: productId,
-            quantity: quantity
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            updateCartDisplay(data);
-        } else {
-            showToast(data.message || 'Failed to update quantity', 'error');
-        }
-    })
-    .catch(() => showToast('An error occurred', 'error'));
-}
-
-function removeItem(productId) {
-    const item = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
-    item.classList.add('removing');
-
-    fetch('{% url "api_cart_remove" %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({ product_id: productId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            setTimeout(() => {
-                item.remove();
-                if (data.cart_count === 0) {
-                    location.reload();
-                } else {
-                    updateCartDisplay(data);
-                }
-            }, 300);
-        } else {
-            item.classList.remove('removing');
-            showToast(data.message || 'Failed to remove item', 'error');
-        }
-    })
-    .catch(() => {
-        item.classList.remove('removing');
-        showToast('An error occurred', 'error');
-    });
-}
-
-function clearCart() {
-    if (!confirm('Are you sure you want to clear your cart?')) return;
-
-    fetch('{% url "api_cart_clear" %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            showToast(data.message || 'Failed to clear cart', 'error');
-        }
-    })
-    .catch(() => showToast('An error occurred', 'error'));
-}
-
-function updateCartDisplay(data) {
-    // Update header cart count
-    const cartCount = document.querySelector('.cart-count');
-    if (cartCount) {
-        cartCount.textContent = data.cart_count;
-    }
-
-    // Update summary
-    document.getElementById('cart-subtotal').textContent = '$' + data.subtotal.toFixed(2);
-    document.getElementById('cart-tax').textContent = '$' + data.tax.toFixed(2);
-    document.getElementById('cart-total').textContent = '$' + data.total.toFixed(2);
-
-    // Update shipping
-    const shippingEl = document.getElementById('cart-shipping');
-    if (data.free_shipping) {
-        shippingEl.innerHTML = '<span class="free-shipping">FREE</span>';
-    } else {
-        shippingEl.textContent = '$' + data.shipping.toFixed(2);
-    }
-
-    // Update item subtotals
-    if (data.items) {
-        data.items.forEach(item => {
-            const input = document.querySelector(`.quantity-input[data-product-id="${item.product_id}"]`);
-            if (input) {
-                input.value = item.quantity;
-                const subtotalEl = input.closest('.cart-item').querySelector('.item-subtotal');
-                if (subtotalEl) {
-                    subtotalEl.textContent = item.subtotal.toFixed(2);
-                }
-            }
-        });
-    }
-}
-
-function handleCheckout(e) {
-    e.preventDefault();
-    
-    const submitBtn = document.getElementById('place-order-btn');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<span class="spinner-small"></span> Processing...';
-    submitBtn.disabled = true;
-
-    const formData = new FormData(e.target);
-
-    fetch('{% url "checkout" %}', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('Order placed successfully!', 'success');
-            setTimeout(() => {
-                window.location.href = data.redirect || '{% url "orders" %}';
-            }, 1000);
-        } else {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-            showToast(data.message || 'Failed to place order', 'error');
-        }
-    })
-    .catch(() => {
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        showToast('An error occurred', 'error');
-    });
-}
-
-function showToast(message, type) {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            ${type === 'success' 
-                ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>'
-                : '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'
-            }
-        </svg>
-        <span>${message}</span>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
+// URLs for cart operations
+window.cartUrls = {
+    update: '{% url "api_cart_update" %}',
+    remove: '{% url "api_cart_remove" %}',
+    clear: '{% url "api_cart_clear" %}',
+    checkout: '{% url "checkout" %}',
+    ordersPage: '{% url "orders" %}'
+};
+window.csrfToken = '{{ csrf_token }}';
 </script>
+<script src="/static/js/customer/cart.js?v=20251212-006"></script>
 {% endblock %}

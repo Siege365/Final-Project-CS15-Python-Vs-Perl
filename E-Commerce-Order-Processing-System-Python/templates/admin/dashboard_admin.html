@@ -224,75 +224,14 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Revenue Chart
-    const revenueCtx = document.getElementById('revenue-chart');
-    if (revenueCtx) {
-        new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: {{ chart_data.revenue_labels|safe }},
-                datasets: [{
-                    label: 'Revenue',
-                    data: {{ chart_data.revenue_data|safe }},
-                    borderColor: 'rgb(99, 102, 241)',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    // Orders Chart
-    const ordersCtx = document.getElementById('orders-chart');
-    if (ordersCtx) {
-        new Chart(ordersCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-                datasets: [{
-                    data: {{ chart_data.orders_by_status|safe }},
-                    backgroundColor: [
-                        'rgb(245, 158, 11)',
-                        'rgb(59, 130, 246)',
-                        'rgb(139, 92, 246)',
-                        'rgb(34, 197, 94)',
-                        'rgb(239, 68, 68)'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-});
+window.chartData = {
+    revenueLabels: {{ chart_data.revenue_labels|safe }},
+    revenueData: {{ chart_data.revenue_data|safe }},
+    ordersByStatus: {{ chart_data.orders_by_status|safe }}
+};
 </script>
+<script src="/static/js/admin/dashboard.js?v=20251212-002"></script>
 {% endblock %}

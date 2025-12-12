@@ -303,18 +303,39 @@ def orders(request):
     role = user.role
 
     search = request.GET.get('search', '')
-    sort = request.GET.get('sort', '')
+    status = request.GET.get('status', '')
+    sort = request.GET.get('sort', 'newest')
     page = int(request.GET.get('page', 1))
     per_page = 10
 
     if role in ['admin', 'staff']:
         orders_list = Order.objects.select_related('customer').order_by('-created_at')
+        # Admin stats
+        stats = {
+            'total_orders': Order.objects.count(),
+            'pending_orders': Order.objects.filter(status='pending').count(),
+            'processing_orders': Order.objects.filter(status='processing').count(),
+            'delivered_orders': Order.objects.filter(status='delivered').count(),
+        }
     else:
         customer_id = Auth.get_customer_id(request)
         if customer_id:
             orders_list = Order.objects.filter(customer_id=customer_id).order_by('-created_at')
+            # Customer stats
+            stats = {
+                'total_orders': Order.objects.filter(customer_id=customer_id).count(),
+                'pending_orders': Order.objects.filter(customer_id=customer_id, status='pending').count(),
+                'processing_orders': Order.objects.filter(customer_id=customer_id, status='processing').count(),
+                'delivered_orders': Order.objects.filter(customer_id=customer_id, status='delivered').count(),
+            }
         else:
             orders_list = Order.objects.none()
+            stats = {
+                'total_orders': 0,
+                'pending_orders': 0,
+                'processing_orders': 0,
+                'delivered_orders': 0,
+            }
 
     # Search filter
     if search:
@@ -325,14 +346,19 @@ def orders(request):
             Q(payment_method__icontains=search)
         )
 
+    # Status filter
+    if status:
+        orders_list = orders_list.filter(status=status)
+
     # Sort
-    if sort:
-        if sort == 'recent':
-            orders_list = orders_list.order_by('-id')
-        elif sort == 'earliest':
-            orders_list = orders_list.order_by('id')
-        elif sort in ['pending', 'processing', 'shipped', 'delivered', 'cancelled']:
-            orders_list = orders_list.filter(status=sort)
+    if sort == 'newest':
+        orders_list = orders_list.order_by('-created_at')
+    elif sort == 'oldest':
+        orders_list = orders_list.order_by('created_at')
+    elif sort == 'total_high':
+        orders_list = orders_list.order_by('-total')
+    elif sort == 'total_low':
+        orders_list = orders_list.order_by('total')
 
     # Pagination
     total = orders_list.count()
@@ -343,6 +369,8 @@ def orders(request):
 
     context = {
         'orders': orders_page,
+        'stats': stats,
+        'status': status,
         'sort': sort,
         'page': page,
         'total_pages': total_pages,

@@ -1,34 +1,23 @@
-/* Reset & Box Sizing */
+/* ============================================
+   Reset & Base Styles
+   ============================================ */
 *, *::before, *::after {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 html {
     font-size: 16px;
     scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
 }
 
 body {
-    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--gray-50);
+    color: var(--gray-800);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-img, picture, video, canvas, svg {
-    display: block;
-    max-width: 100%;
-}
-
-input, button, textarea, select {
-    font: inherit;
-}
-
-p, h1, h2, h3, h4, h5, h6 {
-    overflow-wrap: break-word;
 }
 
 a {
@@ -36,38 +25,89 @@ a {
     color: inherit;
 }
 
-ul, ol {
-    list-style: none;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
+img {
+    max-width: 100%;
+    height: auto;
 }
 
 button {
     cursor: pointer;
     border: none;
     background: none;
+    font-family: inherit;
 }
 
-/* Remove default appearance */
-input[type="number"] {
-    -moz-appearance: textfield;
+/* App Layout */
+.app-body {
+    display: flex;
+    min-height: 100vh;
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: margin-left var(--transition-normal);
+}
+
+.sidebar-collapsed .main-content {
+    margin-left: var(--sidebar-collapsed);
+}
+
+/* Page Content */
+.page-content {
+    flex: 1;
+    padding: 2rem;
+    animation: pageSlideUp 0.4s ease-out;
+}
+
+@keyframes pageSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.page-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--gray-900);
     margin: 0;
 }
 
-/* Focus visible for accessibility */
-:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
+.page-header h1 svg {
+    color: var(--primary);
 }
 
-:focus:not(:focus-visible) {
-    outline: none;
+.page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.page-subtitle {
+    margin-top: 0.5rem;
+    color: var(--gray-500);
 }

@@ -40,7 +40,7 @@ def cart(request):
     """View shopping cart."""
     cart_items = request.session.get('cart', [])
 
-    # Ensure each cart item has an image_url
+    # Ensure each cart item has an image_url and calculate subtotal
     for item in cart_items:
         if not item.get('image_url'):
             try:
@@ -48,6 +48,8 @@ def cart(request):
                 item['image_url'] = product.image_url
             except Product.DoesNotExist:
                 item['image_url'] = ''
+        # Calculate item subtotal
+        item['subtotal'] = float(item['price']) * int(item['quantity'])
 
     # Get customer's address
     customer_address = ''
@@ -70,12 +72,13 @@ def cart(request):
     total = subtotal + tax + shipping
 
     return render(request, 'customer/cart.html', {
-        'cart': cart_items,
-        'subtotal': subtotal,
-        'tax': tax,
+        'cart_items': cart_items,
+        'cart_count': len(cart_items),
+        'cart_subtotal': subtotal,
+        'cart_tax': tax,
         'tax_rate': tax_rate * 100,
-        'shipping': shipping,
-        'total': total,
+        'cart_shipping': shipping,
+        'cart_total': total,
         'customer_address': customer_address,
         'free_shipping_threshold': free_shipping_threshold,
         'role': request.user.role,
@@ -192,13 +195,132 @@ def api_cart_add(request):
     request.session['cart'] = cart
     request.session.modified = True
     
-    # Calculate cart count
-    cart_count = sum(item['quantity'] for item in cart)
+    # Calculate cart count (distinct products)
+    cart_count = len(cart)
     
     return JsonResponse({
         'success': True,
         'product_name': product.name,
         'cart_count': cart_count
+    })
+
+
+@login_required
+@require_POST
+def api_cart_update(request):
+    """API endpoint for updating cart item quantity."""
+    import json
+    
+    try:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        quantity = int(data.get('quantity', 1))
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'success': False, 'message': 'Invalid request data'})
+    
+    if quantity < 1:
+        return JsonResponse({'success': False, 'message': 'Invalid quantity'})
+    
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Product not found'})
+    
+    # Check stock
+    if product.stock_quantity < quantity:
+        return JsonResponse({'success': False, 'message': 'Not enough stock available'})
+    
+    cart = request.session.get('cart', [])
+    
+    # Update quantity for the product
+    found = False
+    for item in cart:
+        if str(item['product_id']) == str(product_id):
+            item['quantity'] = quantity
+            item['subtotal'] = float(item['price']) * quantity
+            found = True
+            break
+    
+    if not found:
+        return JsonResponse({'success': False, 'message': 'Product not in cart'})
+    
+    request.session['cart'] = cart
+    request.session.modified = True
+    
+    # Calculate totals
+    subtotal = sum(float(item['price']) * int(item['quantity']) for item in cart)
+    tax_rate = APP_CONFIG.get('tax_rate', 0.08)
+    shipping_rate = APP_CONFIG.get('shipping_rate', 5.00)
+    free_shipping_threshold = APP_CONFIG.get('free_shipping_threshold', 100.00)
+    
+    tax = subtotal * tax_rate
+    shipping = 0 if subtotal >= free_shipping_threshold else shipping_rate
+    total = subtotal + tax + shipping
+    
+    return JsonResponse({
+        'success': True,
+        'cart_count': len(cart),
+        'items': cart,
+        'subtotal': subtotal,
+        'tax': tax,
+        'shipping': shipping,
+        'free_shipping': subtotal >= free_shipping_threshold,
+        'total': total
+    })
+
+
+@login_required
+@require_POST
+def api_cart_remove(request):
+    """API endpoint for removing item from cart."""
+    import json
+    
+    try:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'success': False, 'message': 'Invalid request data'})
+    
+    cart = request.session.get('cart', [])
+    
+    # Filter out the product to remove
+    cart = [item for item in cart if str(item['product_id']) != str(product_id)]
+    request.session['cart'] = cart
+    request.session.modified = True
+    
+    # Calculate totals
+    subtotal = sum(float(item['price']) * int(item['quantity']) for item in cart)
+    tax_rate = APP_CONFIG.get('tax_rate', 0.08)
+    shipping_rate = APP_CONFIG.get('shipping_rate', 5.00)
+    free_shipping_threshold = APP_CONFIG.get('free_shipping_threshold', 100.00)
+    
+    tax = subtotal * tax_rate
+    shipping = 0 if subtotal >= free_shipping_threshold else shipping_rate
+    total = subtotal + tax + shipping
+    
+    return JsonResponse({
+        'success': True,
+        'cart_count': len(cart),
+        'items': cart,
+        'subtotal': subtotal,
+        'tax': tax,
+        'shipping': shipping,
+        'free_shipping': subtotal >= free_shipping_threshold,
+        'total': total
+    })
+
+
+@login_required
+@require_POST
+def api_cart_clear(request):
+    """API endpoint for clearing the entire cart."""
+    request.session['cart'] = []
+    request.session.modified = True
+    
+    return JsonResponse({
+        'success': True,
+        'message': 'Cart cleared successfully',
+        'cart_count': 0
     })
 
 
@@ -211,8 +333,11 @@ def api_cart_add(request):
 def checkout(request):
     """Process checkout."""
     cart = request.session.get('cart', [])
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
     if not cart:
+        if is_ajax:
+            return JsonResponse({'success': False, 'message': 'Your cart is empty'})
         messages.error(request, 'Your cart is empty')
         return redirect('cart')
 
@@ -246,6 +371,8 @@ def checkout(request):
     try:
         customer = Customer.objects.get(id=customer_id)
     except Customer.DoesNotExist:
+        if is_ajax:
+            return JsonResponse({'success': False, 'message': 'Customer profile not found'})
         messages.error(request, 'Customer profile not found')
         return redirect('cart')
 
@@ -259,11 +386,21 @@ def checkout(request):
     if result['success']:
         # Clear cart
         request.session['cart'] = []
+        if is_ajax:
+            from django.urls import reverse
+            return JsonResponse({
+                'success': True,
+                'message': 'Order placed successfully!',
+                'redirect': reverse('order_detail', args=[result['order_id']])
+            })
         messages.success(request, 'Order placed successfully!')
         return redirect('order_detail', order_id=result['order_id'])
     else:
+        if is_ajax:
+            return JsonResponse({'success': False, 'message': result['message']})
         messages.error(request, result['message'])
         return redirect('cart')
+
 
 
 # =============================================================================
@@ -296,6 +433,36 @@ def order_cancel(request, order_id):
     return redirect('order_detail', order_id=order_id)
 
 
+@customer_required
+@require_POST
+def api_order_cancel(request):
+    """API endpoint for cancelling an order."""
+    import json
+    
+    try:
+        data = json.loads(request.body)
+        order_id = data.get('order_id')
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'success': False, 'message': 'Invalid request data'})
+    
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Order not found'})
+    
+    # Verify order belongs to customer
+    customer_id = Auth.get_customer_id(request)
+    if order.customer_id != customer_id:
+        return JsonResponse({'success': False, 'message': 'Access denied'})
+    
+    if order.status != 'pending':
+        return JsonResponse({'success': False, 'message': 'Only pending orders can be cancelled'})
+    
+    result = order.cancel_order()
+    
+    return JsonResponse(result)
+
+
 # =============================================================================
 # ACCOUNT
 # =============================================================================
@@ -303,18 +470,31 @@ def order_cancel(request, order_id):
 @customer_required
 def account(request):
     """View account details."""
+    from django.db.models import Sum, Count
+    
     customer_id = Auth.get_customer_id(request)
 
     if customer_id:
         try:
             customer = Customer.objects.select_related('user').get(id=customer_id)
+            
+            # Get customer stats
+            stats = Order.objects.filter(customer_id=customer_id).aggregate(
+                total_orders=Count('id'),
+                total_spent=Sum('total')
+            )
+            stats['total_orders'] = stats['total_orders'] or 0
+            stats['total_spent'] = stats['total_spent'] or 0
         except Customer.DoesNotExist:
             customer = None
+            stats = {'total_orders': 0, 'total_spent': 0}
     else:
         customer = None
+        stats = {'total_orders': 0, 'total_spent': 0}
 
     return render(request, 'customer/account.html', {
         'customer': customer,
+        'stats': stats,
         'role': request.user.role,
     })
 
@@ -326,31 +506,67 @@ def account_update(request):
     customer_id = Auth.get_customer_id(request)
 
     if not customer_id:
-        messages.error(request, 'Customer profile not found')
-        return redirect('account')
+        return JsonResponse({'success': False, 'message': 'Customer profile not found'})
 
     try:
         customer = Customer.objects.get(id=customer_id)
     except Customer.DoesNotExist:
-        messages.error(request, 'Customer profile not found')
-        return redirect('account')
+        return JsonResponse({'success': False, 'message': 'Customer profile not found'})
 
     # Update customer details
     customer.first_name = request.POST.get('first_name', customer.first_name)
     customer.last_name = request.POST.get('last_name', customer.last_name)
     customer.phone = request.POST.get('phone', customer.phone)
     customer.address = request.POST.get('address', customer.address)
-    customer.city = request.POST.get('city', customer.city)
-    customer.state = request.POST.get('state', customer.state)
-    customer.zip_code = request.POST.get('zip_code', customer.zip_code)
+    customer.city = request.POST.get('city', getattr(customer, 'city', ''))
+    customer.state = request.POST.get('state', getattr(customer, 'state', ''))
+    customer.zip_code = request.POST.get('zip_code', getattr(customer, 'zip_code', ''))
+
+    # Update email if provided
+    email = request.POST.get('email')
+    if email and email != request.user.email:
+        request.user.email = email
+        request.user.save()
 
     try:
         customer.save()
-        messages.success(request, 'Account updated successfully!')
+        return JsonResponse({'success': True, 'message': 'Profile updated successfully'})
     except Exception as e:
-        messages.error(request, f'Failed to update account: {str(e)}')
+        return JsonResponse({'success': False, 'message': f'Failed to update account: {str(e)}'})
 
-    return redirect('account')
+
+@customer_required
+@require_POST
+def change_password(request):
+    """Change user password."""
+    from django.contrib.auth.hashers import check_password, make_password
+    
+    current_password = request.POST.get('current_password', '')
+    new_password = request.POST.get('new_password', '')
+    confirm_password = request.POST.get('confirm_password', '')
+    
+    # Validate inputs
+    if not current_password or not new_password or not confirm_password:
+        return JsonResponse({'success': False, 'message': 'All password fields are required'})
+    
+    if new_password != confirm_password:
+        return JsonResponse({'success': False, 'message': 'New passwords do not match'})
+    
+    if len(new_password) < 6:
+        return JsonResponse({'success': False, 'message': 'Password must be at least 6 characters'})
+    
+    # Verify current password
+    user = request.user
+    if not check_password(current_password, user.password):
+        return JsonResponse({'success': False, 'message': 'Current password is incorrect'})
+    
+    # Update password
+    try:
+        user.password = make_password(new_password)
+        user.save()
+        return JsonResponse({'success': True, 'message': 'Password updated successfully'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Failed to update password: {str(e)}'})
 
 
 @customer_required
@@ -390,6 +606,9 @@ urlpatterns = [
     
     # Cart API (for AJAX)
     path('api/cart/add/', api_cart_add, name='api_cart_add'),
+    path('api/cart/update/', api_cart_update, name='api_cart_update'),
+    path('api/cart/remove/', api_cart_remove, name='api_cart_remove'),
+    path('api/cart/clear/', api_cart_clear, name='api_cart_clear'),
 
     # Checkout
     path('checkout/', checkout, name='checkout'),
@@ -398,12 +617,16 @@ urlpatterns = [
     # Order cancellation
     path('orders/<int:order_id>/cancel/', order_cancel, name='order_cancel'),
     path('orders/<int:order_id>/cancel/', order_cancel, name='customer_order_cancel'),
+    
+    # Order API
+    path('api/order/cancel/', api_order_cancel, name='api_order_cancel'),
 
     # Account
     path('account/', account, name='account'),
     path('account/', account, name='customer_account'),
     path('account/update/', account_update, name='account_update'),
     path('account/update/', account_update, name='customer_account_update'),
+    path('account/change-password/', change_password, name='change_password'),
     path('account/delete/', account_delete, name='account_delete'),
     path('account/delete/', account_delete, name='customer_account_delete'),
 ]

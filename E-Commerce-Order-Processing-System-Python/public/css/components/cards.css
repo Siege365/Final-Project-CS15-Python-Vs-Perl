@@ -1,68 +1,95 @@
-/* Card Styles */
+/* ============================================
+   Cards with 3D Effects
+   ============================================ */
 .card {
-    background-color: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    padding: var(--space-6);
-    margin-bottom: var(--space-6);
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+    animation: cardSlideIn 0.4s ease-out both;
+    padding: 1.5rem;
+}
+
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card:hover {
+    box-shadow: var(--shadow-xl);
 }
 
 .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
-    padding-bottom: var(--space-4);
-    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--gray-100);
 }
 
 .card-header h2 {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
-    margin: 0;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
 }
 
 .card-header h2 svg {
-    width: 20px;
-    height: 20px;
-    color: var(--primary-color);
+    color: var(--primary);
 }
 
 .card-body {
-    padding: var(--space-4) 0;
+    padding: 1.5rem;
 }
 
-.card-footer {
-    margin-top: var(--space-4);
-    padding-top: var(--space-4);
-    border-top: 1px solid var(--border-color);
-}
-
-/* Metric Cards */
+/* ============================================
+   Metrics Cards with 3D Effect
+   ============================================ */
 .metrics {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--space-4);
-    margin-bottom: var(--space-6);
-}
-
-.metrics.mini {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    perspective: 1000px;
 }
 
 .metric-card {
-    --card-accent: var(--primary-color);
-    background-color: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: var(--space-5);
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
     position: relative;
     overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-style: preserve-3d;
+    box-shadow: var(--shadow-md);
+    animation: cardFadeIn 0.5s ease-out both;
+}
+
+/* Staggered animation for metric cards */
+.metric-card:nth-child(1) { animation-delay: 0.1s; }
+.metric-card:nth-child(2) { animation-delay: 0.2s; }
+.metric-card:nth-child(3) { animation-delay: 0.3s; }
+.metric-card:nth-child(4) { animation-delay: 0.4s; }
+.metric-card:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .metric-card::before {
@@ -70,208 +97,153 @@
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--card-accent);
+    width: 4px;
+    height: 100%;
+    background: var(--gray-300);
+    transition: width var(--transition-normal);
 }
 
-.metric-card.success {
-    --card-accent: var(--success-color);
+.metric-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
 }
 
-.metric-card.warning {
-    --card-accent: var(--warning-color);
+.metric-card:hover {
+    transform: translateY(-8px) rotateX(3deg) rotateY(-3deg);
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.2),
+        0 0 30px -5px rgba(99, 102, 241, 0.15);
 }
 
-.metric-card.info {
-    --card-accent: var(--info-color);
+.metric-card:hover::after {
+    opacity: 1;
 }
 
-.metric-card.danger {
-    --card-accent: var(--error-color);
-}
+.metric-card.success::before { background: linear-gradient(180deg, var(--success), #16a34a); }
+.metric-card.warning::before { background: linear-gradient(180deg, var(--warning), #d97706); }
+.metric-card.info::before { background: linear-gradient(180deg, var(--info), #2563eb); }
+.metric-card.error::before { background: linear-gradient(180deg, var(--error), #dc2626); }
 
 .metric-card-icon {
-    width: 48px;
-    height: 48px;
-    background-color: color-mix(in srgb, var(--card-accent) 10%, transparent);
-    border-radius: var(--radius-md);
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: var(--space-3);
+    margin-bottom: 1rem;
+    background: var(--gray-100);
+    transition: transform var(--transition-normal);
 }
 
+.metric-card:hover .metric-card-icon {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.metric-card.success .metric-card-icon { background: var(--success-bg); color: var(--success); }
+.metric-card.warning .metric-card-icon { background: var(--warning-bg); color: var(--warning); }
+.metric-card.info .metric-card-icon { background: var(--info-bg); color: var(--info); }
+.metric-card.error .metric-card-icon { background: var(--error-bg); color: var(--error); }
+
 .metric-card-icon svg {
-    width: 24px;
-    height: 24px;
-    stroke: var(--card-accent);
+    width: 26px;
+    height: 26px;
 }
 
 .metric-card h3 {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-secondary);
-    margin-bottom: var(--space-1);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-500);
+    margin-bottom: 0.5rem;
 }
 
 .metric-card .value {
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-    line-height: 1.2;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--gray-900);
 }
 
-.metric-card .metric-change {
-    display: inline-flex;
+/* Mini Metrics */
+.metrics.mini {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.metrics.mini .metric-card {
+    padding: 1.25rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-1);
-    font-size: var(--font-size-xs);
-    margin-top: var(--space-2);
-}
-
-.metric-card .metric-change.positive {
-    color: var(--success-color);
-}
-
-.metric-card .metric-change.negative {
-    color: var(--error-color);
-}
-
-.metric-card .metric-subtext {
-    font-size: var(--font-size-xs);
-    color: var(--text-muted);
-    margin-top: var(--space-2);
-}
-
-/* Chart Cards */
-.charts-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: var(--space-6);
-    margin-bottom: var(--space-6);
-}
-
-.chart-card {
-    min-height: 350px;
-}
-
-.chart-card.large {
-    grid-column: 1 / -1;
-}
-
-.chart-container {
-    height: 250px;
     position: relative;
 }
 
-/* Dashboard Grid */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: var(--space-6);
+.metrics.mini .metric-card::before {
+    width: 100%;
+    height: 3px;
+    top: 0;
+    left: 0;
 }
 
-/* Order Detail Layout */
-.order-detail-layout {
-    display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: var(--space-6);
-}
-
-.order-detail-layout .order-items-section {
-    min-width: 0;
-}
-
-.order-detail-layout .order-summary-section {
+.metrics.mini .metric-card-icon {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 0.75rem;
 }
 
-.order-detail-layout .order-summary-section .card {
-    margin-bottom: 0;
+.metrics.mini .metric-card-icon svg {
+    width: 22px;
+    height: 22px;
 }
 
-/* Account Layout */
-.account-layout {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: var(--space-6);
+.metrics.mini .metric-card h3 {
+    font-size: 0.8rem;
+    margin-bottom: 0.375rem;
 }
 
-.account-layout .card {
-    margin-bottom: 0;
+.metrics.mini .metric-card .value {
+    font-size: 1.5rem;
 }
 
-/* Cart Layout */
-.cart-layout {
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: var(--space-6);
-    align-items: start;
+/* Metric Change Indicators */
+.metric-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-full);
 }
 
-.cart-items-container .card {
-    margin-bottom: 0;
+.metric-change.positive {
+    color: var(--success);
+    background: var(--success-bg);
 }
 
-.cart-summary-container {
-    position: sticky;
-    top: calc(var(--header-height) + var(--space-6));
+.metric-change.negative {
+    color: var(--error);
+    background: var(--error-bg);
 }
 
-.cart-summary {
-    margin-bottom: 0;
+.metric-subtext {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin-top: 0.5rem;
 }
 
-/* Product Form Layout */
-.form-layout {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: var(--space-8);
-}
-
-.form-main {
-    min-width: 0;
-}
-
-.form-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-    .order-detail-layout,
-    .cart-layout,
-    .form-layout {
-        grid-template-columns: 1fr;
-    }
-    
-    .cart-summary-container {
-        position: static;
-    }
-    
-    .charts-row {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .dashboard-grid,
-    .account-layout {
-        grid-template-columns: 1fr;
-    }
-    
-    .metrics {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .metrics {
-        grid-template-columns: 1fr;
-    }
+/* Admin Card */
+.admin-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
 }

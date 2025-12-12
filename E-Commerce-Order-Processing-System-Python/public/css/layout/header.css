@@ -1,277 +1,156 @@
-/* Header Styles */
-
-.header {
-    position: fixed;
+/* ============================================
+   Top Bar / Header
+   ============================================ */
+.topbar {
+    height: var(--topbar-height);
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    gap: 1rem;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
-    height: var(--header-height);
-    background-color: var(--white);
-    border-bottom: 1px solid var(--border-color);
-    z-index: var(--z-header);
+    z-index: 100;
 }
 
-.header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100%;
-    max-width: var(--container-xl);
-    margin: 0 auto;
-    padding: 0 var(--space-4);
-}
-
-/* Logo */
-.header-logo {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    text-decoration: none;
-}
-
-.header-logo svg {
+.sidebar-toggle {
     width: 40px;
     height: 40px;
-}
-
-.header-logo-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.header-logo-brand {
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--primary-color);
-    line-height: 1.2;
-}
-
-.header-logo-tagline {
-    font-size: var(--font-size-xs);
-    color: var(--text-muted);
-    line-height: 1;
-}
-
-/* Header Actions */
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-}
-
-.header-action-btn {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    color: var(--text-secondary);
     border-radius: var(--radius-md);
+    color: var(--gray-500);
     transition: all var(--transition-fast);
 }
 
-.header-action-btn:hover {
-    background-color: var(--gray-100);
-    color: var(--primary-color);
+.sidebar-toggle:hover {
+    background: var(--gray-100);
+    color: var(--primary);
 }
 
-.header-action-btn svg {
-    width: 20px;
-    height: 20px;
-}
-
-/* Cart Badge */
-.cart-badge {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 4px;
-    background-color: var(--primary-color);
-    color: var(--white);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* User Menu */
-.user-menu {
-    position: relative;
-}
-
-.user-menu-toggle {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
-    color: var(--text-primary);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.user-menu-toggle:hover {
-    background-color: var(--gray-100);
-}
-
-.user-avatar {
-    width: 32px;
-    height: 32px;
-    background-color: var(--primary-color);
-    color: var(--white);
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-}
-
-.user-menu-info {
-    display: none;
-}
-
-.user-menu-name {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-}
-
-.user-menu-role {
-    font-size: var(--font-size-xs);
-    color: var(--text-muted);
-}
-
-.user-menu-arrow {
-    color: var(--text-muted);
-}
-
-.user-menu-arrow svg {
-    width: 16px;
-    height: 16px;
-    transition: transform var(--transition-fast);
-}
-
-.user-menu.open .user-menu-arrow svg {
-    transform: rotate(180deg);
-}
-
-/* User Dropdown */
-.user-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: var(--space-2);
-    min-width: 200px;
-    background-color: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all var(--transition-fast);
-}
-
-.user-menu.open .user-dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.user-dropdown-header {
-    padding: var(--space-3) var(--space-4);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.user-dropdown-email {
-    font-size: var(--font-size-sm);
-    color: var(--text-muted);
-}
-
-.user-dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
-    color: var(--text-secondary);
-    font-size: var(--font-size-sm);
-    transition: all var(--transition-fast);
-}
-
-.user-dropdown-item:hover {
-    background-color: var(--gray-50);
-    color: var(--primary-color);
-}
-
-.user-dropdown-item svg {
-    width: 18px;
-    height: 18px;
-}
-
-.user-dropdown-divider {
-    height: 1px;
-    background-color: var(--border-color);
-    margin: var(--space-2) 0;
-}
-
-.user-dropdown-item.logout {
-    color: var(--error-color);
-}
-
-.user-dropdown-item.logout:hover {
-    background-color: var(--error-bg);
-    color: var(--error-color);
-}
-
-/* Mobile Menu Toggle */
-.mobile-menu-toggle {
-    display: none;
-    padding: var(--space-2);
-    color: var(--text-secondary);
-}
-
-.mobile-menu-toggle svg {
+.sidebar-toggle svg {
     width: 24px;
     height: 24px;
 }
 
-/* Auth Header (for login/register pages) */
-.header-auth {
-    background-color: transparent;
-    border-bottom: none;
+.topbar-search {
+    flex: 1;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    background: var(--gray-100);
+    border-radius: var(--radius-full);
+    padding: 0 1rem;
+}
+
+.topbar-search svg {
+    width: 20px;
+    height: 20px;
+    color: var(--gray-400);
+}
+
+.topbar-search input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    outline: none;
+}
+
+.topbar-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Topbar Cart Icon with Badge */
+.topbar-cart {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-lg);
+    background: var(--gray-100);
+    color: var(--gray-600);
+    transition: all var(--transition-fast);
+}
+
+.topbar-cart:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    transform: scale(1.05);
+}
+
+.topbar-cart svg {
+    width: 20px;
+    height: 20px;
+}
+
+.cart-badge {
     position: absolute;
-}
-
-.header-auth .header-logo-brand {
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    background: var(--error);
     color: var(--white);
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    animation: badgePop 0.3s ease;
 }
 
-.header-auth .header-logo-tagline {
-    color: rgba(255, 255, 255, 0.7);
+@keyframes badgePop {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .mobile-menu-toggle {
-        display: flex;
-    }
-    
-    .user-menu-toggle {
-        padding: var(--space-2);
-    }
-    
-    .user-menu-arrow {
-        display: none;
-    }
+/* User Profile */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-full);
 }
 
-@media (min-width: 769px) {
-    .user-menu-info {
-        display: block;
-    }
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.user-role {
+    font-size: 0.75rem;
+    color: var(--gray-500);
 }

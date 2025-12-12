@@ -111,7 +111,7 @@
                     <th>Orders</th>
                     <th>Total Spent</th>
                     <th>Joined</th>
-                    <th style="width: 100px;">Actions</th>
+                    <th style="width: 80px; text-align: center;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -132,20 +132,31 @@
                     </td>
                     <td><strong>${{ customer.total_spent|floatformat:2 }}</strong></td>
                     <td>{{ customer.user.created_at|date:"M j, Y" }}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="{% url 'admin_customer_detail' customer.id %}" class="btn btn-sm" title="View Details">
+                    <td style="text-align: center;">
+                        <div class="kebab-menu">
+                            <button class="kebab-btn" title="Actions">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                            </a>
-                            <button class="btn btn-sm btn-danger delete-customer-btn" data-customer-id="{{ customer.id }}" data-customer-name="{{ customer.first_name }} {{ customer.last_name }}" title="Delete">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <circle cx="12" cy="5" r="1"></circle>
+                                    <circle cx="12" cy="12" r="1"></circle>
+                                    <circle cx="12" cy="19" r="1"></circle>
                                 </svg>
                             </button>
+                            <div class="kebab-dropdown">
+                                <a href="{% url 'admin_customer_detail' customer.id %}" class="kebab-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    View Customer
+                                </a>
+                                <button class="kebab-item danger delete-customer-btn" data-customer-id="{{ customer.id }}" data-customer-name="{{ customer.first_name }} {{ customer.last_name }}" data-customer-email="{{ customer.user.email }}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    Delete Customer
+                                </button>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -218,7 +229,13 @@
     <div class="modal-backdrop"></div>
     <div class="modal-content modal-sm">
         <div class="modal-header">
-            <h2>Delete Customer</h2>
+            <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete Customer
+            </h2>
             <button class="modal-close" id="modal-close">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -227,67 +244,44 @@
             </button>
         </div>
         <div class="modal-body">
-            <p>Are you sure you want to delete <strong id="delete-customer-name"></strong>?</p>
-            <p class="warning-text">This action cannot be undone. All customer data will be permanently removed.</p>
+            <p>Are you sure you want to delete this customer?</p>
+            <div class="customer-delete-info">
+                <div class="delete-info-row">
+                    <span class="delete-info-label">Name:</span>
+                    <strong id="delete-customer-name"></strong>
+                </div>
+                <div class="delete-info-row">
+                    <span class="delete-info-label">Email:</span>
+                    <span id="delete-customer-email"></span>
+                </div>
+            </div>
+            <p class="warning-text">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                This action cannot be undone. All customer data will be permanently removed.
+            </p>
         </div>
         <div class="modal-footer">
             <button class="btn" id="cancel-delete">Cancel</button>
-            <button class="btn btn-danger" id="confirm-delete">Delete Customer</button>
+            <button class="btn btn-danger" id="confirm-delete">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete Customer
+            </button>
         </div>
     </div>
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('delete-modal');
-    const modalClose = document.getElementById('modal-close');
-    const cancelDelete = document.getElementById('cancel-delete');
-    const confirmDelete = document.getElementById('confirm-delete');
-    const customerNameEl = document.getElementById('delete-customer-name');
-    let customerToDelete = null;
-
-    // Open delete modal
-    document.querySelectorAll('.delete-customer-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            customerToDelete = this.dataset.customerId;
-            customerNameEl.textContent = this.dataset.customerName;
-            modal.classList.add('show');
-        });
-    });
-
-    // Close modal
-    function closeModal() {
-        modal.classList.remove('show');
-        customerToDelete = null;
-    }
-
-    modalClose.addEventListener('click', closeModal);
-    cancelDelete.addEventListener('click', closeModal);
-    document.querySelector('#delete-modal .modal-backdrop').addEventListener('click', closeModal);
-
-    // Confirm delete
-    confirmDelete.addEventListener('click', function() {
-        if (!customerToDelete) return;
-
-        this.disabled = true;
-        this.innerHTML = '<span class="spinner-small"></span> Deleting...';
-
-        // Submit delete form
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/customers/${customerToDelete}/delete/`;
-        
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = 'csrfmiddlewaretoken';
-        csrfInput.value = '{{ csrf_token }}';
-        form.appendChild(csrfInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    });
-});
+window.csrfToken = '{{ csrf_token }}';
 </script>
+<script src="/static/js/admin/common.js"></script>
+<script src="/static/js/admin/customers.js"></script>
 {% endblock %}

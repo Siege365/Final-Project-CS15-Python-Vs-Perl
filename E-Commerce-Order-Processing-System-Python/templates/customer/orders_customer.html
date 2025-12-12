@@ -18,7 +18,7 @@
 
 <!-- Order Stats -->
 <div class="metrics mini">
-    <div class="metric-card">
+    <a href="{% url 'orders' %}" class="metric-card{% if not status %} active{% endif %}" style="text-decoration: none; color: inherit;">
         <div class="metric-card-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -27,8 +27,8 @@
         </div>
         <h3>Total Orders</h3>
         <div class="value">{{ stats.total_orders }}</div>
-    </div>
-    <div class="metric-card warning">
+    </a>
+    <a href="{% url 'orders' %}?status=pending" class="metric-card warning{% if status == 'pending' %} active{% endif %}" style="text-decoration: none; color: inherit;">
         <div class="metric-card-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -37,8 +37,8 @@
         </div>
         <h3>Pending</h3>
         <div class="value">{{ stats.pending_orders }}</div>
-    </div>
-    <div class="metric-card info">
+    </a>
+    <a href="{% url 'orders' %}?status=processing" class="metric-card info{% if status == 'processing' %} active{% endif %}" style="text-decoration: none; color: inherit;">
         <div class="metric-card-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3"></circle>
@@ -47,8 +47,8 @@
         </div>
         <h3>Processing</h3>
         <div class="value">{{ stats.processing_orders }}</div>
-    </div>
-    <div class="metric-card success">
+    </a>
+    <a href="{% url 'orders' %}?status=delivered" class="metric-card success{% if status == 'delivered' %} active{% endif %}" style="text-decoration: none; color: inherit;">
         <div class="metric-card-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -57,7 +57,7 @@
         </div>
         <h3>Delivered</h3>
         <div class="value">{{ stats.delivered_orders }}</div>
-    </div>
+    </a>
 </div>
 
 <!-- Filters -->

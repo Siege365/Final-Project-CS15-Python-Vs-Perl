@@ -9,7 +9,8 @@ from lib.ECommerce.Config import APP_CONFIG
 def cart_context(request):
     """Add cart information to template context."""
     cart = request.session.get('cart', [])
-    cart_count = len(cart)  # Number of distinct products
+    # Count distinct products in cart (not total quantity)
+    cart_count = len(cart)
 
     return {
         'cart': cart,

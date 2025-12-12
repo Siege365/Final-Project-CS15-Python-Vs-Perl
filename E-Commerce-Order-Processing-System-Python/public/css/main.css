@@ -1,0 +1,49 @@
+/* 
+ * ShopPy - Modern E-Commerce System CSS
+ * Main stylesheet with modular imports
+ * 
+ * This file imports all CSS modules for better organization and readability.
+ * Each module is responsible for a specific area of the application.
+ */
+
+/* ============================================
+   Base Styles - Foundation
+   ============================================ */
+@import url('base/variables.css');   /* CSS Custom Properties */
+@import url('base/reset.css');       /* Reset & Base Styles */
+
+/* ============================================
+   Layout - Page Structure
+   ============================================ */
+@import url('layout/sidebar.css');   /* Sidebar Navigation */
+@import url('layout/header.css');    /* Top Bar / Header */
+@import url('layout/footer.css');    /* Footer */
+@import url('layout/navigation.css'); /* Toast Notifications */
+
+/* ============================================
+   Components - Reusable UI Elements
+   ============================================ */
+@import url('components/buttons.css');  /* Buttons */
+@import url('components/cards.css');    /* Cards & Metrics */
+@import url('components/forms.css');    /* Form Elements */
+@import url('components/tables.css');   /* Tables, Pagination, Kebab Menu */
+@import url('components/alerts.css');   /* Alerts & Notifications */
+@import url('components/modals.css');   /* Modal Dialogs */
+
+/* ============================================
+   Pages - Page-Specific Styles
+   ============================================ */
+@import url('pages/auth.css');       /* Login & Register Pages */
+@import url('pages/dashboard.css');  /* Dashboard & Charts */
+@import url('pages/products.css');   /* Product Grid & Forms */
+@import url('pages/orders.css');     /* Orders & Order Details */
+@import url('pages/cart.css');       /* Shopping Cart */
+@import url('pages/reports.css');    /* Reports Page */
+@import url('pages/account.css');    /* Account & Customer Pages */
+
+/* ============================================
+   Utilities - Helper Classes & Animations
+   ============================================ */
+@import url('utilities/animations.css'); /* Keyframes & Animations */
+@import url('utilities/responsive.css'); /* Media Queries */
+@import url('utilities/helpers.css');    /* Empty States & Helpers */
